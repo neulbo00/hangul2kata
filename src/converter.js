@@ -24,6 +24,10 @@ const PALATAL_ROWS = {
   "ㅋ":["キャ","キェ","キョ","キュ"],"ㅌ":["チャ","チェ","チョ","チュ"],
   "ㅍ":["ピャ","ピェ","ピョ","ピュ"],"ㅎ":["ヒャ","ヒェ","ヒョ","ヒュ"]
 };
+const VOICED_PALATAL_ROWS = {
+  "ㄱ":["ギャ","ギェ","ギョ","ギュ"],"ㄷ":["ジャ","ジェ","ジョ","ジュ"],
+  "ㅂ":["ビャ","ビェ","ビョ","ビュ"],"ㅈ":["ジャ","ジェ","ジョ","ジュ"]
+};
 const VOWEL_INDEX = {"ㅏ":0,"ㅐ":1,"ㅓ":2,"ㅔ":1,"ㅗ":2,"ㅜ":3,"ㅡ":3,"ㅣ":4};
 const PALATAL_INDEX = {"ㅑ":0,"ㅒ":1,"ㅕ":2,"ㅖ":1,"ㅛ":2,"ㅠ":3};
 const COMPOUND_SUFFIX = {"ㅘ":"ァ","ㅙ":"ェ","ㅚ":"ェ","ㅝ":"ォ","ㅞ":"ェ","ㅟ":"ィ","ㅢ":"ィ"};
@@ -44,7 +48,9 @@ function renderOnset(unit, previous, ngStyle) {
 
   const voiced = previous && previous.vowel && VOICING_CODAS.has(previous.coda ?? "");
   if (Object.hasOwn(PALATAL_INDEX, unit.vowel)) {
-    const palatal = PALATAL_ROWS[unit.onset];
+    const palatal = voiced && VOICED_PALATAL_ROWS[unit.onset]
+      ? VOICED_PALATAL_ROWS[unit.onset]
+      : PALATAL_ROWS[unit.onset];
     if (palatal) return (TENSE_ONSETS.has(unit.onset) && previous ? "ッ" : "") + palatal[PALATAL_INDEX[unit.vowel]];
   }
 
