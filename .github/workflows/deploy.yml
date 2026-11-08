@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: 20
       - run: npm test
+      - run: npm run check:public-data
 
   deploy:
     if: github.event_name != 'pull_request'
