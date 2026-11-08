@@ -50,7 +50,7 @@ function renderOnset(unit, previous, ngStyle) {
 
   if (Object.hasOwn(COMPOUND_SUFFIX, unit.vowel)) {
     const uRow = ROWS[unit.onset]?.[3] ?? "";
-    return uRow + COMPOUND_SUFFIX[unit.vowel];
+    return (TENSE_ONSETS.has(unit.onset) && previous ? "ッ" : "") + uRow + COMPOUND_SUFFIX[unit.vowel];
   }
 
   const index = VOWEL_INDEX[unit.vowel];
