@@ -6,7 +6,8 @@
   "description": "Korean pronunciation to Japanese katakana converter",
   "scripts": {
     "test": "node --test",
-    "check:public-data": "node scripts/check-public-data.mjs"
+    "check:public-data": "node scripts/check-public-data.mjs",
+    "build": "node scripts/build.mjs"
   },
   "engines": {
     "node": ">=20"
