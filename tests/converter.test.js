@@ -70,5 +70,5 @@ test("keeps the small semi-voiced mark as a separate Unicode code point", () => 
 
 
 test("voices ㅈ after an open syllable before a glide vowel", () => {
-  assert.equal(convert("가자"), "カジャ");
+  assert.equal(convert("가져"), "カジョ");
 });
