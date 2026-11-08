@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10131a">
+  <title>hangul2kata</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">KOREAN PRONUNCIATION TOOL</p>
+        <h1>hangul<span>2</span>kata</h1>
+      </div>
+      <span class="local-tag">LOCAL ONLY</span>
+    </header>
+
+    <section class="toolbar" aria-label="변환 설정">
+      <label>받침 표기
+        <select id="finalStyle"><option value="small">작은 확장 가타카나</option><option value="full">일반 가타카나</option></select>
+      </label>
+      <label>어절 경계
+        <select id="boundaryMode"><option value="independent">어절 독립</option><option value="connected">연결 규칙(실험)</option></select>
+      </label>
+      <label>ㅇ 표기
+        <select id="ngStyle"><option value="na">기본</option><option value="ng">ン 추가(실험)</option></select>
+      </label>
+    </section>
+
+    <section class="workbench">
+      <article class="panel">
+        <div class="panel-head"><label for="source">한국어 원문</label><span>INPUT</span></div>
+        <textarea id="source" spellcheck="false" placeholder="한국어 문장을 입력하세요."></textarea>
+        <div class="panel-foot"><span id="charCount">0자</span><button id="clearBtn" class="subtle">지우기</button></div>
+      </article>
+      <article class="panel result-panel">
+        <div class="panel-head"><label for="result">가타카나 발음</label><span>OUTPUT</span></div>
+        <textarea id="result" readonly aria-live="polite" placeholder="변환 결과가 여기에 표시됩니다."></textarea>
+        <div class="panel-foot"><span>번역이 아닌 발음 표기</span><button id="copyBtn" class="primary">결과 복사</button></div>
+      </article>
+    </section>
+
+    <details class="dictionary">
+      <summary>사용자 사전</summary>
+      <p>한 어절 단위로 원문과 출력값을 지정합니다. 이 브라우저에만 저장됩니다.</p>
+      <div class="dict-row"><input id="dictKey" placeholder="한국어 어절"><input id="dictValue" placeholder="가타카나 출력"><button id="addDict" class="subtle">추가</button></div>
+      <div class="dict-actions"><button id="exportDict" class="subtle">JSON 내보내기</button><label class="file-button">JSON 가져오기<input id="importDict" type="file" accept="application/json"></label></div>
+      <ul id="dictList"></ul>
+    </details>
+    <footer>hangul2kata · 입력 데이터는 외부로 전송되지 않습니다.</footer>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
