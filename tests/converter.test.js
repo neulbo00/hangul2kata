@@ -19,7 +19,7 @@ test("supports full-size coda style", () => {
 });
 
 test("preserves punctuation", () => {
-  assert.equal(convert("안녕!"), "アンニョン!");
+  assert.equal(convert("안녕!"), "ンアンニョン!");
 });
 
 test("user dictionary overrides a whole whitespace-delimited token", () => {
@@ -28,4 +28,9 @@ test("user dictionary overrides a whole whitespace-delimited token", () => {
 
 test("voices lenis onset after a sonorant within a word", () => {
   assert.equal(convert("한글"), "ハンガウㇽ");
+});
+
+
+test("supports silent initial ieung as an alternate style", () => {
+  assert.equal(convert("안녕", { ng_style: "ng" }), "アンニョン");
 });
