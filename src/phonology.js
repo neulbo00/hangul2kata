@@ -19,31 +19,61 @@ export function decompose(text) {
 const SIMPLE_CODA = {
   "ㄳ":"ㄱ","ㄵ":"ㄴ","ㄶ":"ㄴ","ㄺ":"ㄱ","ㄻ":"ㅁ","ㄼ":"ㄹ","ㄽ":"ㄹ",
   "ㄾ":"ㄹ","ㄿ":"ㅂ","ㅀ":"ㄹ","ㅄ":"ㅂ","ㄲ":"ㄱ","ㅆ":"ㄷ",
-  "ㅅ":"ㄷ","ㅈ":"ㄷ","ㅊ":"ㄷ","ㅋ":"ㄱ","ㅌ":"ㄷ","ㅍ":"ㅂ","ㅎ":"ㄷ"
+  "ㅅ":"ㄷ","ㅈ":"ㄷ","ㅊ":"ㄷ","ㅋ":"ㄱ","ㅌ":"ㄷ","ㅍ":"ㅂ"
 };
+const COMPLEX_LIAISON = {
+  "ㄳ":["ㄱ","ㅅ"],"ㄵ":["ㄴ","ㅈ"],"ㄶ":["ㄴ","ㅎ"],"ㄺ":["ㄹ","ㄱ"],
+  "ㄻ":["ㄹ","ㅁ"],"ㄼ":["ㄹ","ㅂ"],"ㄽ":["ㄹ","ㅅ"],"ㄾ":["ㄹ","ㅌ"],
+  "ㄿ":["ㄹ","ㅍ"],"ㅀ":["ㄹ","ㅎ"],"ㅄ":["ㅂ","ㅅ"]
+};
+const ASPIRATED = {"ㄱ":"ㅋ","ㄷ":"ㅌ","ㅂ":"ㅍ","ㅈ":"ㅊ"};
+const ASPIRATION_CODAS = new Set(["ㅎ","ㄶ","ㅀ"]);
+const LIAISON_CODAS = new Set(["ㄱ","ㄲ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ"]);
 
 function isVowelOnset(s) { return s && s.onset === "ㅇ"; }
 function hasVowel(s) { return s && s.vowel; }
 
-// This pass intentionally handles only well-defined local patterns.
-// Morphology-dependent and phrase-level rules are not inferred.
+// Only local, explicitly defined patterns are applied. Morphology-dependent
+// and cross-word rules are intentionally not inferred in this version.
 export function applyPronunciation(input, boundaryMode = "independent") {
   const units = input.map(x => ({ ...x }));
+
+  // ㅎ coda aspiration before an obstruent.
   for (let i = 0; i < units.length - 1; i++) {
     const a = units[i], b = units[i + 1];
-    if (!a.coda || !hasVowel(b)) continue;
+    if (!a.coda || !b.onset) continue;
+    if (boundaryMode === "independent" && a.wordId !== b.wordId) continue;
+    if (ASPIRATION_CODAS.has(a.coda) && ASPIRATED[b.onset]) {
+      if (a.coda === "ㄶ") a.coda = "ㄴ";
+      else if (a.coda === "ㅀ") a.coda = "ㄹ";
+      else a.coda = "";
+      b.onset = ASPIRATED[b.onset];
+    }
+  }
+
+  // Liaison before a vowel-initial syllable.
+  for (let i = 0; i < units.length - 1; i++) {
+    const a = units[i], b = units[i + 1];
+    if (!a.coda || !hasVowel(b) || !isVowelOnset(b)) continue;
     if (boundaryMode === "independent" && a.wordId !== b.wordId) continue;
 
-    // Basic liaison for single consonant codas before a zero onset.
-    if (isVowelOnset(b) && ["ㄱ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ"].includes(a.coda)) {
-      b.onset = SIMPLE_CODA[a.coda] ?? a.coda;
+    const complex = COMPLEX_LIAISON[a.coda];
+    if (complex) {
+      a.coda = complex[0];
+      if (complex[1] !== "ㅎ") b.onset = complex[1];
+      continue;
+    }
+    if (a.coda === "ㅎ") {
       a.coda = "";
-    } else if (isVowelOnset(b) && a.coda === "ㅎ") {
+      continue;
+    }
+    if (LIAISON_CODAS.has(a.coda)) {
+      b.onset = a.coda;
       a.coda = "";
     }
   }
 
-  // Coda neutralization for the remaining closed syllables.
+  // Neutralize codas that remain in syllable-final position.
   for (const unit of units) {
     if (unit.coda) unit.coda = SIMPLE_CODA[unit.coda] ?? unit.coda;
   }
@@ -72,12 +102,11 @@ export function applyPronunciation(input, boundaryMode = "independent") {
 }
 
 export function normalizeSyllables(text, boundaryMode = "independent") {
-  // Split at whitespace but preserve every original separator exactly.
-  const parts = text.match(/\s+|[^\s]+/gu) ?? [];
+  const parts = text.match(/\\s+|[^\\s]+/gu) ?? [];
   let wordId = 0;
   const result = [];
   for (const part of parts) {
-    if (/^\s+$/u.test(part)) {
+    if (/^\\s+$/u.test(part)) {
       result.push(...Array.from(part, raw => ({ raw })));
       wordId++;
     } else {
