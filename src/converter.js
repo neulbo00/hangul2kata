@@ -68,9 +68,9 @@ function renderOnset(unit, previous, ngStyle) {
 
 export function convert(text, options = {}) {
   const { ng_style = "na", final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
-  const words = text.split(/(\\s+)/u);
+  const words = text.split(/(\s+)/u);
   return words.map(word => {
-    if (!word || /^\\s+$/u.test(word)) return word;
+    if (!word || /^\s+$/u.test(word)) return word;
     if (Object.prototype.hasOwnProperty.call(dictionary, word)) return dictionary[word];
     const units = normalizeSyllables(word, boundary_mode);
     let previous = null;
