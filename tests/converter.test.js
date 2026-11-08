@@ -61,3 +61,9 @@ test("preserves the ㅌ liaison sound before 이", () => {
 test("deletes ㅎ and links the sonorant from a ㅎ cluster", () => {
   assert.equal(convert("많이"), "マニ");
 });
+
+
+test("keeps the small semi-voiced mark as a separate Unicode code point", () => {
+  const points = Array.from(convert("밥")).map(char => char.codePointAt(0));
+  assert.deepEqual(points, [0x30D1, 0x31F7, 0x309A]);
+});
