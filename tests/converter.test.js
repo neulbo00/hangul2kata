@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { convert } from "../src/index.js";
 
 test("preserves non-Hangul text and whitespace", () => {
-  assert.equal(convert("Love 한글 123!"), "Loveハングㇽ 123!");
+  assert.equal(convert("Love 한글 123!"), "Love ハングㇽ 123!");
 });
 
 test("converts basic Hangul syllables", () => {
@@ -71,4 +71,21 @@ test("keeps the small semi-voiced mark as a separate Unicode code point", () => 
 
 test("voices ㅈ after an open syllable before a glide vowel", () => {
   assert.equal(convert("가져"), "カジョ");
+});
+
+
+test("preserves Latin s, backslashes, tabs, and line breaks", () => {
+  const input = "songs\\set\t한글\nYES";
+  assert.equal(convert(input), "songs\\set\tハングㇽ\nYES");
+});
+
+test("keeps dictionary optional when no entry matches", () => {
+  assert.equal(convert("안녕 세상"), "ンアンニョン セサン");
+});
+
+test("applies a dictionary entry only to its exact whitespace-delimited token", () => {
+  assert.equal(
+    convert("안녕 세상 안녕", { dictionary: { "안녕": "アンニョン(辞書)" } }),
+    "アンニョン(辞書) セサン アンニョン(辞書)"
+  );
 });
