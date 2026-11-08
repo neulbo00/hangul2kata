@@ -54,7 +54,11 @@ function update() {
   $("charCount").textContent = Array.from(source.value).length + "자";
 }
 
-source.addEventListener("input", update);
+let inputTimer;
+source.addEventListener("input", () => {
+  clearTimeout(inputTimer);
+  inputTimer = setTimeout(update, 150);
+});
 ["finalStyle","boundaryMode","ngStyle"].forEach(id => $(id).addEventListener("change", update));
 $("clearBtn").addEventListener("click", () => { source.value = ""; update(); source.focus(); });
 $("copyBtn").addEventListener("click", async () => {
