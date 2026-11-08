@@ -67,3 +67,8 @@ test("keeps the small semi-voiced mark as a separate Unicode code point", () => 
   const points = Array.from(convert("밥")).map(char => char.codePointAt(0));
   assert.deepEqual(points, [0x30D1, 0x31F7, 0x309A]);
 });
+
+
+test("voices ㅈ after an open syllable before a glide vowel", () => {
+  assert.equal(convert("가자"), "カジャ");
+});
