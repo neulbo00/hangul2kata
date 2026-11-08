@@ -7,7 +7,7 @@ test("preserves non-Hangul text and whitespace", () => {
 });
 
 test("converts basic Hangul syllables", () => {
-  assert.equal(convert("가나다"), "カナタ");
+  assert.equal(convert("가나다"), "カナダ");
 });
 
 test("uses small coda characters by default", () => {
@@ -23,7 +23,7 @@ test("preserves punctuation", () => {
 });
 
 test("user dictionary overrides a whole whitespace-delimited token", () => {
-  assert.equal(convert("안녕 세상", { dictionary: { "안녕": "アンニョン(辞書)" } }), "アンニョン(辞書)セサン");
+  assert.equal(convert("안녕 세상", { dictionary: { "안녕": "アンニョン(辞書)" } }), "アンニョン(辞書) セサン");
 });
 
 test("voices lenis onset after a sonorant within a word", () => {
