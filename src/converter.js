@@ -1,35 +1,63 @@
 import { normalizeSyllables } from "./phonology.js";
 
-const ONSET_KATAKANA = {
-  "ㄱ":["カ","ガ"],"ㄲ":["カ","ッガ"],"ㄴ":["ナ","ナ"],"ㄷ":["タ","ダ"],"ㄸ":["タ","ッダ"],
-  "ㄹ":["ラ","ラ"],"ㅁ":["マ","マ"],"ㅂ":["パ","バ"],"ㅃ":["パ","ッバ"],"ㅅ":["サ","サ"],
-  "ㅆ":["サ","ッサ"],"ㅇ":["",""],"ㅈ":["チャ","ジャ"],"ㅉ":["チャ","ッジャ"],
-  "ㅊ":["チャ","チャ"],"ㅋ":["カ","カ"],"ㅌ":["タ","タ"],"ㅍ":["パ","パ"],"ㅎ":["ハ","ハ"]
+const ROWS = {
+  "ㄱ":["カ","ケ","コ","ク","キ"],"ㄲ":["カ","ケ","コ","ク","キ"],"ㄴ":["ナ","ネ","ノ","ヌ","ニ"],
+  "ㄷ":["タ","テ","ト","ツ","チ"],"ㄸ":["タ","テ","ト","ツ","チ"],"ㄹ":["ラ","レ","ロ","ル","リ"],
+  "ㅁ":["マ","メ","モ","ム","ミ"],"ㅂ":["パ","ペ","ポ","プ","ピ"],"ㅃ":["パ","ペ","ポ","プ","ピ"],
+  "ㅅ":["サ","セ","ソ","ス","シ"],"ㅆ":["サ","セ","ソ","ス","シ"],"ㅇ":["ア","エ","オ","ウ","イ"],
+  "ㅈ":["チャ","チェ","チョ","チュ","チ"],"ㅉ":["チャ","チェ","チョ","チュ","チ"],"ㅊ":["チャ","チェ","チョ","チュ","チ"],
+  "ㅋ":["カ","ケ","コ","ク","キ"],"ㅌ":["タ","テ","ト","ツ","チ"],"ㅍ":["パ","ペ","ポ","プ","ピ"],
+  "ㅎ":["ハ","ヘ","ホ","フ","ヒ"]
 };
-const PALATAL_ONSET = {
-  "ㄱ":["キ","ギ"],"ㄲ":["キ","ッギ"],"ㄴ":["ニ","ニ"],"ㄷ":["チ","チ"],"ㄸ":["チ","ッチ"],
-  "ㄹ":["リ","リ"],"ㅁ":["ミ","ミ"],"ㅂ":["ピ","ビ"],"ㅃ":["ピ","ッビ"],"ㅅ":["シ","シ"],
-  "ㅆ":["シ","ッシ"],"ㅇ":["",""],"ㅈ":["ジ","ジ"],"ㅉ":["ジ","ッジ"],
-  "ㅊ":["チ","チ"],"ㅋ":["キ","キ"],"ㅌ":["チ","チ"],"ㅍ":["ピ","ピ"],"ㅎ":["ヒ","ヒ"]
+const VOICED_ROWS = {
+  "ㄱ":["ガ","ゲ","ゴ","グ","ギ"],"ㄷ":["ダ","デ","ド","ヅ","ヂ"],
+  "ㅂ":["バ","ベ","ボ","ブ","ビ"],"ㅈ":["ジャ","ジェ","ジョ","ジュ","ジ"]
 };
-const VOWEL_KATAKANA = {
-  "ㅏ":"ア","ㅐ":"エ","ㅑ":"ャ","ㅒ":"ェ","ㅓ":"オ","ㅔ":"エ","ㅕ":"ョ","ㅖ":"ェ",
-  "ㅗ":"オ","ㅘ":"ワ","ㅙ":"ウェ","ㅚ":"ウェ","ㅛ":"ョ","ㅜ":"ウ","ㅝ":"ウォ","ㅞ":"ウェ",
-  "ㅟ":"ウィ","ㅠ":"ュ","ㅡ":"ウ","ㅢ":"ウィ","ㅣ":"イ"
+const PALATAL_ROWS = {
+  "ㄱ":["キャ","キェ","キョ","キュ"],"ㄲ":["キャ","キェ","キョ","キュ"],
+  "ㄴ":["ニャ","ニェ","ニョ","ニュ"],"ㄷ":["チャ","チェ","チョ","チュ"],
+  "ㄸ":["チャ","チェ","チョ","チュ"],"ㄹ":["リャ","リェ","リョ","リュ"],
+  "ㅁ":["ミャ","ミェ","ミョ","ミュ"],"ㅂ":["ピャ","ピェ","ピョ","ピュ"],
+  "ㅃ":["ピャ","ピェ","ピョ","ピュ"],"ㅅ":["シャ","シェ","ショ","シュ"],
+  "ㅆ":["シャ","シェ","ショ","シュ"],"ㅈ":["チャ","チェ","チョ","チュ"],
+  "ㅉ":["チャ","チェ","チョ","チュ"],"ㅊ":["チャ","チェ","チョ","チュ"],
+  "ㅋ":["キャ","キェ","キョ","キュ"],"ㅌ":["チャ","チェ","チョ","チュ"],
+  "ㅍ":["ピャ","ピェ","ピョ","ピュ"],"ㅎ":["ヒャ","ヒェ","ヒョ","ヒュ"]
 };
-const PALATAL_VOWELS = new Set(["ㅑ","ㅒ","ㅕ","ㅖ","ㅛ","ㅠ"]);
-const STANDALONE_VOWELS = {"ㅑ":"ヤ","ㅒ":"イェ","ㅕ":"ヨ","ㅖ":"イェ","ㅛ":"ヨ","ㅠ":"ユ"};
+const VOWEL_INDEX = {"ㅏ":0,"ㅐ":1,"ㅓ":2,"ㅔ":1,"ㅗ":2,"ㅜ":3,"ㅡ":3,"ㅣ":4};
+const PALATAL_INDEX = {"ㅑ":0,"ㅒ":1,"ㅕ":2,"ㅖ":1,"ㅛ":2,"ㅠ":3};
+const COMPOUND_SUFFIX = {"ㅘ":"ァ","ㅙ":"ェ","ㅚ":"ェ","ㅝ":"ォ","ㅞ":"ェ","ㅟ":"ィ","ㅢ":"ィ"};
+const STANDALONE_VOWELS = {
+  "ㅏ":"ア","ㅐ":"エ","ㅑ":"ヤ","ㅒ":"イェ","ㅓ":"オ","ㅔ":"エ","ㅕ":"ヨ","ㅖ":"イェ",
+  "ㅗ":"オ","ㅘ":"ワ","ㅙ":"ウェ","ㅚ":"ウェ","ㅛ":"ヨ","ㅜ":"ウ","ㅝ":"ウォ","ㅞ":"ウェ",
+  "ㅟ":"ウィ","ㅠ":"ユ","ㅡ":"ウ","ㅢ":"ウィ","ㅣ":"イ"
+};
 const CODA_SMALL = {"ㄱ":"ㇰ","ㄴ":"ン","ㄷ":"ッ","ㄹ":"ㇽ","ㅁ":"ㇺ","ㅂ":"ㇷ゚","ㅇ":"ン"};
 const CODA_FULL = {"ㄱ":"ク","ㄴ":"ン","ㄷ":"ッ","ㄹ":"ル","ㅁ":"ム","ㅂ":"プ","ㅇ":"ン"};
 const VOICING_CODAS = new Set(["","ㄴ","ㄹ","ㅁ","ㅇ"]);
 const TENSE_ONSETS = new Set(["ㄲ","ㄸ","ㅃ","ㅆ","ㅉ"]);
 
-function renderOnset(unit, previous) {
-  const table = PALATAL_VOWELS.has(unit.vowel) ? PALATAL_ONSET : ONSET_KATAKANA;
-  const pair = table[unit.onset] ?? ["",""];
+function renderOnset(unit, previous, ngStyle) {
+  if (unit.onset === "ㅇ") {
+    return (ngStyle === "na" ? "ン" : "") + (STANDALONE_VOWELS[unit.vowel] ?? "");
+  }
+
   const voiced = previous && previous.vowel && VOICING_CODAS.has(previous.coda ?? "");
-  if (TENSE_ONSETS.has(unit.onset)) return pair[previous ? 1 : 0];
-  return pair[voiced ? 1 : 0];
+  if (Object.hasOwn(PALATAL_INDEX, unit.vowel)) {
+    const palatal = PALATAL_ROWS[unit.onset];
+    if (palatal) return (TENSE_ONSETS.has(unit.onset) && previous ? "ッ" : "") + palatal[PALATAL_INDEX[unit.vowel]];
+  }
+
+  if (Object.hasOwn(COMPOUND_SUFFIX, unit.vowel)) {
+    const uRow = ROWS[unit.onset]?.[3] ?? "";
+    return uRow + COMPOUND_SUFFIX[unit.vowel];
+  }
+
+  const index = VOWEL_INDEX[unit.vowel];
+  if (index === undefined) return "";
+  if (TENSE_ONSETS.has(unit.onset) && previous) return "ッ" + (ROWS[unit.onset]?.[index] ?? "");
+  const row = voiced && VOICED_ROWS[unit.onset] ? VOICED_ROWS[unit.onset] : ROWS[unit.onset];
+  return row?.[index] ?? "";
 }
 
 export function convert(text, options = {}) {
@@ -42,15 +70,11 @@ export function convert(text, options = {}) {
     let previous = null;
     return units.map(unit => {
       if (unit.raw !== undefined) { previous = null; return unit.raw; }
-      const onset = unit.onset === "ㅇ" && ng_style === "na" ? "ン" : renderOnset(unit, previous);
-      const vowel = unit.onset === "ㅇ" && STANDALONE_VOWELS[unit.vowel]
-        ? STANDALONE_VOWELS[unit.vowel]
-        : (VOWEL_KATAKANA[unit.vowel] ?? "");
+      const onset = renderOnset(unit, previous, ng_style);
       const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
       const coda = unit.coda ? (table[unit.coda] ?? "") : "";
-      let rendered = onset + vowel + coda;
       previous = unit;
-      return rendered;
+      return onset + coda;
     }).join("");
   }).join("");
 }
