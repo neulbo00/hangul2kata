@@ -59,8 +59,13 @@ export function applyPronunciation(input, boundaryMode = "independent") {
 
     const complex = COMPLEX_LIAISON[a.coda];
     if (complex) {
-      a.coda = complex[0];
-      if (complex[1] !== "ㅎ") b.onset = complex[1];
+      if (complex[1] === "ㅎ") {
+        a.coda = "";
+        b.onset = complex[0];
+      } else {
+        a.coda = complex[0];
+        b.onset = complex[1];
+      }
       continue;
     }
     if (a.coda === "ㅎ") {
