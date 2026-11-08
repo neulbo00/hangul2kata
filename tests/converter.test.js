@@ -50,9 +50,14 @@ test("moves the second consonant of a complex coda before a vowel", () => {
 });
 
 test("applies ㅎ aspiration before a plain onset", () => {
-  assert.equal(convert("좋다"), "ジョッタ");
+  assert.equal(convert("좋다"), "チョタ");
 });
 
 test("preserves the ㅌ liaison sound before 이", () => {
   assert.equal(convert("밭이"), "パチ");
+});
+
+
+test("deletes ㅎ and links the sonorant from a ㅎ cluster", () => {
+  assert.equal(convert("많이"), "マニ");
 });
