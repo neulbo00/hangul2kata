@@ -18,6 +18,7 @@ const VOWEL_KATAKANA = {
   "ㅟ":"ウィ","ㅠ":"ュ","ㅡ":"ウ","ㅢ":"ウィ","ㅣ":"イ"
 };
 const PALATAL_VOWELS = new Set(["ㅑ","ㅒ","ㅕ","ㅖ","ㅛ","ㅠ"]);
+const STANDALONE_VOWELS = {"ㅑ":"ヤ","ㅒ":"イェ","ㅕ":"ヨ","ㅖ":"イェ","ㅛ":"ヨ","ㅠ":"ユ"};
 const CODA_SMALL = {"ㄱ":"ㇰ","ㄴ":"ン","ㄷ":"ッ","ㄹ":"ㇽ","ㅁ":"ㇺ","ㅂ":"ㇷ゚","ㅇ":"ン"};
 const CODA_FULL = {"ㄱ":"ク","ㄴ":"ン","ㄷ":"ッ","ㄹ":"ル","ㅁ":"ム","ㅂ":"プ","ㅇ":"ン"};
 const VOICING_CODAS = new Set(["","ㄴ","ㄹ","ㅁ","ㅇ"]);
@@ -40,7 +41,9 @@ export function convert(text, options = {}) {
     return units.map(unit => {
       if (unit.raw !== undefined) { previous = null; return unit.raw; }
       const onset = renderOnset(unit, previous);
-      const vowel = VOWEL_KATAKANA[unit.vowel] ?? "";
+      const vowel = unit.onset === "ㅇ" && STANDALONE_VOWELS[unit.vowel]
+        ? STANDALONE_VOWELS[unit.vowel]
+        : (VOWEL_KATAKANA[unit.vowel] ?? "");
       const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
       const coda = unit.coda ? (table[unit.coda] ?? "") : "";
       let rendered = onset + vowel + coda;
