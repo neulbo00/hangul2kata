@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { convert } from "../src/index.js";
 
 test("preserves non-Hangul text and whitespace", () => {
-  assert.equal(convert("Love 한글 123!"), "Loveハンガウㇽ 123!");
+  assert.equal(convert("Love 한글 123!"), "Loveハングㇽ 123!");
 });
 
 test("converts basic Hangul syllables", () => {
@@ -27,7 +27,7 @@ test("user dictionary overrides a whole whitespace-delimited token", () => {
 });
 
 test("voices lenis onset after a sonorant within a word", () => {
-  assert.equal(convert("한글"), "ハンガウㇽ");
+  assert.equal(convert("한글"), "ハングㇽ");
 });
 
 
@@ -41,5 +41,5 @@ test("does not add a small tsu to word-initial tense onsets", () => {
 });
 
 test("marks a medial tense onset with a small tsu", () => {
-  assert.equal(convert("아까"), "ンアッガ");
+  assert.equal(convert("아까"), "ンアッカ");
 });
