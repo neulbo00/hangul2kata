@@ -26,6 +26,7 @@ jobs:
           node-version: 20
       - run: npm test
       - run: npm run check:public-data
+      - run: npm run build
 
   deploy:
     if: github.event_name != 'pull_request'
@@ -39,6 +40,6 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4
