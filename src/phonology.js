@@ -107,11 +107,11 @@ export function applyPronunciation(input, boundaryMode = "independent") {
 }
 
 export function normalizeSyllables(text, boundaryMode = "independent") {
-  const parts = text.match(/\\s+|[^\\s]+/gu) ?? [];
+  const parts = text.match(/\s+|[^\s]+/gu) ?? [];
   let wordId = 0;
   const result = [];
   for (const part of parts) {
-    if (/^\\s+$/u.test(part)) {
+    if (/^\s+$/u.test(part)) {
       result.push(...Array.from(part, raw => ({ raw })));
       wordId++;
     } else {
