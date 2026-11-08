@@ -53,3 +53,20 @@ Reference-site behavior is not the definition of standard pronunciation. H1-H5 r
 - GitHub Pages deploys the static `web/` directory.
 - CI runs Node's built-in test runner before deployment.
 - The source core remains outside the deploy folder and is imported by the web app at runtime; therefore the deployment artifact must include the source modules or a build step must bundle them. Do not deploy only `web/` while leaving imported `../src/` unavailable.
+
+## H1-H5 working hypotheses
+
+These are implementation hypotheses, not verified reference-site behavior.
+
+- H1: plain ㄱ/ㄷ/ㅂ/ㅈ use an unvoiced Japanese row initially and a voiced row after a vowel or sonorant within the same eojeol.
+- H2: initial tense onsets ㄲ/ㄸ/ㅃ/ㅆ/ㅉ do not receive a leading small ッ; medial tense onsets do.
+- H3: no cross-eojeol liaison, tensification, or assimilation in the default independent mode.
+- H4: coda output uses ㇰ/ン/ッ/ㇽ/ㇺ/ㇷ゚ for the neutralized final categories. Complex codas and ㅎ environments require context-sensitive processing.
+- H5: the exact ㅂ onset rendering (including possible ポ/ボ variants) remains unresolved and must be decided from a multi-example reference corpus rather than assumed.
+
+## Current implementation limits
+
+- The connected boundary mode is not implemented yet and is disabled in the UI.
+- Morphology-sensitive exceptions, liquid assimilation, and several complex-coda exceptions are not complete.
+- The current regression suite is a smoke-test set, not a representative accuracy benchmark.
+- The current mapping table is an initial baseline and must be compared against the user's reference outputs and final lyric-card examples before claiming reproduction accuracy.
