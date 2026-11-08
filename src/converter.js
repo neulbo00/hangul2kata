@@ -40,14 +40,13 @@ export function convert(text, options = {}) {
     let previous = null;
     return units.map(unit => {
       if (unit.raw !== undefined) { previous = null; return unit.raw; }
-      const onset = renderOnset(unit, previous);
+      const onset = unit.onset === "ㅇ" && ng_style === "na" ? "ン" : renderOnset(unit, previous);
       const vowel = unit.onset === "ㅇ" && STANDALONE_VOWELS[unit.vowel]
         ? STANDALONE_VOWELS[unit.vowel]
         : (VOWEL_KATAKANA[unit.vowel] ?? "");
       const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
       const coda = unit.coda ? (table[unit.coda] ?? "") : "";
       let rendered = onset + vowel + coda;
-      if (ng_style === "ng" && unit.onset === "ㅇ" && unit.vowel) rendered = "ン" + vowel;
       previous = unit;
       return rendered;
     }).join("");
