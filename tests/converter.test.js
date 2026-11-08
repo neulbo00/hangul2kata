@@ -34,3 +34,12 @@ test("voices lenis onset after a sonorant within a word", () => {
 test("supports silent initial ieung as an alternate style", () => {
   assert.equal(convert("안녕", { ng_style: "ng" }), "アンニョン");
 });
+
+
+test("does not add a small tsu to word-initial tense onsets", () => {
+  assert.equal(convert("까"), "カ");
+});
+
+test("marks a medial tense onset with a small tsu", () => {
+  assert.equal(convert("아까"), "ンアッガ");
+});
