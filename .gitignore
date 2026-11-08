@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+.env
+.env.*
+*.log
+coverage/
+dist/
+# Keep private lyrics, answer keys, and working datasets outside the repository.
+private/
+lyrics/
+answer-data/
+*.xlsx
+*.xls
+*.pdf
