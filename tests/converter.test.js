@@ -43,3 +43,16 @@ test("does not add a small tsu to word-initial tense onsets", () => {
 test("marks a medial tense onset with a small tsu", () => {
   assert.equal(convert("아까"), "ンアッカ");
 });
+
+
+test("moves the second consonant of a complex coda before a vowel", () => {
+  assert.equal(convert("닭이"), "タㇽギ");
+});
+
+test("applies ㅎ aspiration before a plain onset", () => {
+  assert.equal(convert("좋다"), "ジョッタ");
+});
+
+test("preserves the ㅌ liaison sound before 이", () => {
+  assert.equal(convert("밭이"), "パチ");
+});
