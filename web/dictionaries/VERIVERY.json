@@ -2,8 +2,45 @@
   "group": "VERIVERY",
   "korean": "베리베리",
   "officialJapanese": "ベリベリ",
-  "source": "https://verivery.jp/",
+  "source": "https://www.universal-music.co.jp/verivery/biography/",
+  "members": [
+    {
+      "hangul": "동헌",
+      "kana": "ドンホン"
+    },
+    {
+      "hangul": "호영",
+      "kana": "ホヨン"
+    },
+    {
+      "hangul": "민찬",
+      "kana": "ミンチャン"
+    },
+    {
+      "hangul": "계현",
+      "kana": "ケヒョン"
+    },
+    {
+      "hangul": "연호",
+      "kana": "ヨンホ"
+    },
+    {
+      "hangul": "용승",
+      "kana": "ヨンスン"
+    },
+    {
+      "hangul": "강민",
+      "kana": "カンミン"
+    }
+  ],
   "entries": {
-    "베리베리": "ベリベリ"
+    "베리베리": "ベリベリ",
+    "동헌": "ドンホン",
+    "호영": "ホヨン",
+    "민찬": "ミンチャン",
+    "계현": "ケヒョン",
+    "연호": "ヨンホ",
+    "용승": "ヨンスン",
+    "강민": "カンミン"
   }
 }
