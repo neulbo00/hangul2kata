@@ -64,3 +64,26 @@ test("does not voice particles after consonant-final dictionary names", () => {
   const dictionary = { "강민": "カンミン" };
   assert.equal(convert("강민이", { dictionary }), "カンミンイ");
 });
+
+
+test("voices particles after dictionary names ending in sonorant codas", () => {
+  const dictionary = { "강민": "カンミン", "윤서연": "ユン・ソヨン" };
+  assert.equal(convert("강민도", { dictionary }), "カンミンド");
+  assert.equal(convert("윤서연도", { dictionary }), "ユン・ソヨンド");
+});
+
+test("user dictionary entries use the same sonorant-coda particle voicing", () => {
+  const dictionary = { "강민": "カンミン" };
+  assert.equal(convert("강민도", { dictionary }), "カンミンド");
+});
+
+test("ordinary words voice particles after sonorant codas", () => {
+  assert.equal(convert("강민도",), "カンミンド");
+  assert.equal(convert("사과도"), "サグァド");
+});
+
+test("ruby preview preserves sonorant-coda voicing after dictionary names", () => {
+  const html = toRubyHtml("강민도", { dictionary: { "강민": "カンミン" } });
+  const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map(match => match[1]).join("");
+  assert.match(readings, /カンミンド/u);
+});
