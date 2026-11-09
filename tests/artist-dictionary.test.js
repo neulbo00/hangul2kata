@@ -75,7 +75,7 @@ test("moves dictionary-name codas onto vowel-initial particles", () => {
   assert.equal(convert("강민이", { dictionary }), "カンミニ");
   assert.equal(convert("강민이가", { dictionary }), "カンミニガ");
   assert.equal(convert("강민은", { dictionary }), "カンミヌン");
-  assert.equal(convert("강민을", { dictionary }), "カンミヌル");
+  assert.equal(convert("강민을", { dictionary }), "カンミヌㇽ");
   assert.equal(convert("강민에", { dictionary }), "カンミネ");
   assert.equal(convert("강민으로", { dictionary }), "カンミヌロ");
   assert.equal(convert("윤서연이", { dictionary }), "ユン・ソヨニ");
