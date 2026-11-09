@@ -93,7 +93,11 @@ function hasOpenVowelEnding(korean) {
 }
 
 function isParticleSuffix(suffix) {
-  return /^(?:께서|에서|으로|하고|께|이|가|은|는|을|를|과|와|도|만|의|에|로|랑|며)(?=$|[!?.,:;」』)\\]}”’])/u.test(suffix);
+  const particle = ["께서","에서","으로","하고","께","이","가","은","는","을","를","과","와","도","만","의","에","로","랑","며"]
+    .find(candidate => suffix.startsWith(candidate));
+  if (!particle) return false;
+  const next = suffix.slice(particle.length, particle.length + 1);
+  return !next || "!?.,:;」』)}]\\\"'”’".includes(next);
 }
 
 export function getParticleVoicingContext(koreanName, suffix) {
