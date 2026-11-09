@@ -50,3 +50,16 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   assert.match(html, /ベリベリカ/u);
   assert.match(html, /カンミンウン/u);
 });
+
+
+test("voices initial lax consonants in particles after vowel-final dictionary names", () => {
+  const dictionary = { "베리베리": "ベリベリ" };
+  assert.equal(convert("베리베리가", { dictionary }), "ベリベリガ");
+  assert.equal(convert("베리베리도", { dictionary }), "ベリベリド");
+  assert.equal(convert("베리베리과", { dictionary }), "ベリベリグァ");
+});
+
+test("does not voice particles after consonant-final dictionary names", () => {
+  const dictionary = { "강민": "カンミン" };
+  assert.equal(convert("강민이", { dictionary }), "カンミンイ");
+});
