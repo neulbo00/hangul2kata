@@ -55,15 +55,23 @@
       <div class="artist-examples-head">
         <div>
           <h2 id="artistExamplesTitle">아티스트 사전 예시</h2>
-          <p>그룹을 선택하면 공식 일본어 표기가 적용된 예문을 입력합니다.</p>
+          <p>그룹을 선택하면 해당 그룹의 JSON 파일을 불러와 멤버 사전을 적용합니다.</p>
         </div>
         <span id="artistDictionaryStatus" class="dictionary-status">사전 불러오는 중</span>
       </div>
       <div class="artist-example-buttons">
-        <button type="button" class="artist-example" data-sample="베리베리의 강민과 동헌이 무대에 섭니다.">VERIVERY <span>ベリベリ</span></button>
-        <button type="button" class="artist-example" data-sample="이븐의 박한빈과 케이타가 무대에 섭니다.">EVNNE <span>イブン</span></button>
-        <button type="button" class="artist-example" data-sample="트리플에스의 윤서연과 김유연이 무대에 섭니다.">tripleS <span>トリプルエス</span></button>
-        <button type="button" class="artist-example all" data-sample="베리베리의 강민, 이븐의 박한빈, 트리플에스의 윤서연이 함께 무대에 섭니다.">세 그룹 함께 테스트</button>
+        <button type="button" class="artist-example" data-artist="VERIVERY">VERIVERY <span>JSON 불러오기</span></button>
+        <button type="button" class="artist-example" data-artist="EVNNE">EVNNE <span>JSON 불러오기</span></button>
+        <button type="button" class="artist-example" data-artist="tripleS">tripleS <span>JSON 불러오기</span></button>
+        <button type="button" class="artist-example all" data-artist="ALL">세 그룹 JSON 모두 불러오기</button>
+      </div>
+      <div id="artistDictionaryDetails" class="artist-dictionary-details" hidden>
+        <div class="artist-dictionary-details-head">
+          <strong id="loadedArtistTitle">불러온 그룹 사전</strong>
+          <button type="button" id="testArtistExample" class="subtle">예문 입력</button>
+        </div>
+        <p id="loadedArtistCount"></p>
+        <ul id="loadedArtistEntries"></ul>
       </div>
     </section>
 
