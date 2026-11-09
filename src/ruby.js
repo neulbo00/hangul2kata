@@ -29,9 +29,11 @@ function renderToken(token, options) {
   const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" + keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
   let html = "";
   let cursor = 0;
+  let lastMatchedKey = null;
   for (const match of token.matchAll(pattern)) {
     const prefix = match[1] ?? "";
     const key = match[2];
+    lastMatchedKey = key;
     const keyStart = match.index + prefix.length;
     const before = token.slice(cursor, keyStart);
     if (before) {
@@ -43,7 +45,7 @@ function renderToken(token, options) {
   }
   const rest = token.slice(cursor);
   if (rest) {
-    const context = getParticleVoicingContext(key, rest) ? "vowel" : null;
+    const context = lastMatchedKey && getParticleVoicingContext(lastMatchedKey, rest) ? "vowel" : null;
     const reading = convert(rest, { ...options, dictionary: {}, initial_context: context });
     html += HANGUL_PATTERN.test(rest) && reading !== rest ? renderRuby(rest, reading) : escapeHtml(rest);
   }
