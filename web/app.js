@@ -46,8 +46,6 @@ function renderDictionary() {
 function update() {
   const options = {
     final_style: $("finalStyle").value,
-    boundary_mode: $("boundaryMode").value,
-    ng_style: $("ngStyle").value,
     dictionary
   };
   result.value = convert(source.value, options);
@@ -59,7 +57,7 @@ source.addEventListener("input", () => {
   clearTimeout(inputTimer);
   inputTimer = setTimeout(update, 150);
 });
-["finalStyle","boundaryMode","ngStyle"].forEach(id => $(id).addEventListener("change", update));
+$("finalStyle").addEventListener("change", update);
 $("clearBtn").addEventListener("click", () => { source.value = ""; update(); source.focus(); });
 $("copyBtn").addEventListener("click", async () => {
   try {
