@@ -35,3 +35,13 @@ summary{cursor:pointer;font-size:13px;font-weight:650}
 #dictList{padding-left:20px;color:var(--muted);font-size:12px}
 footer{text-align:center;color:#657084;font-size:10px;margin-top:24px}
 @media(max-width:700px){.app{padding:24px 14px}.workbench{grid-template-columns:1fr}.toolbar{display:grid;grid-template-columns:1fr}.toolbar label{justify-content:space-between}.toolbar select{min-width:60%}textarea{height:220px}.dict-row{flex-wrap:wrap}.dict-row input{flex-basis:38%}}
+
+
+.ruby-preview{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.ruby-preview summary{cursor:pointer;font-size:13px;font-weight:650}
+.ruby-preview-body{padding-top:12px}
+.ruby-preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;color:var(--muted);font-size:12px}
+.ruby-output{min-height:86px;padding:18px;background:#111620;border:1px solid var(--line);border-radius:10px;color:var(--text);font-size:23px;line-height:2.35;white-space:pre-wrap;overflow-wrap:anywhere}
+.ruby-output ruby{ruby-position:over;ruby-align:center}
+.ruby-output rt{color:var(--accent);font-size:.52em;font-weight:500;line-height:1.1;letter-spacing:.01em}
+@media(max-width:700px){.ruby-preview-head{align-items:flex-start;flex-direction:column}.ruby-output{font-size:20px;padding:14px}}
