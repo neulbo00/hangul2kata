@@ -133,10 +133,10 @@ function convertWord(word, dictionary, final_style, boundary_mode, initialPrevio
 
 export function convert(text, options = {}) {
   const { final_style = "small", boundary_mode = "independent", dictionary = {}, initial_context = null } = options;
-  const words = text.split(/(\\s+)/u);
+  const words = text.split(/(\s+)/u);
   let context = initial_context;
   return words.map(word => {
-    if (!word || /^\\s+$/u.test(word)) return word;
+    if (!word || /^\s+$/u.test(word)) return word;
     const previous = context === "vowel" ? { vowel: "ㅏ", coda: "" } : null;
     context = null;
     return convertWord(word, dictionary, final_style, boundary_mode, previous);
