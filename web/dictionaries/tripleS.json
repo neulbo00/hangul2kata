@@ -2,8 +2,154 @@
   "group": "tripleS",
   "korean": "트리플에스",
   "officialJapanese": "トリプルエス",
-  "source": "https://triples-wav.jp/",
+  "source": "https://www.triples-official.jp/profile/",
+  "members": [
+    {
+      "hangul": "윤서연",
+      "kana": "ユン・ソヨン",
+      "memberNo": "S1"
+    },
+    {
+      "hangul": "정혜린",
+      "kana": "チョン・ヘリン",
+      "memberNo": "S2"
+    },
+    {
+      "hangul": "이지우",
+      "kana": "イ・ジウ",
+      "memberNo": "S3"
+    },
+    {
+      "hangul": "김채연",
+      "kana": "キム・チェヨン",
+      "memberNo": "S4"
+    },
+    {
+      "hangul": "김유연",
+      "kana": "キム・ユヨン",
+      "memberNo": "S5"
+    },
+    {
+      "hangul": "김수민",
+      "kana": "キム・スミン",
+      "memberNo": "S6"
+    },
+    {
+      "hangul": "김나경",
+      "kana": "キム・ナギョン",
+      "memberNo": "S7"
+    },
+    {
+      "hangul": "공유빈",
+      "kana": "コン・ユビン",
+      "memberNo": "S8"
+    },
+    {
+      "hangul": "카에데",
+      "kana": "カエデ",
+      "memberNo": "S9"
+    },
+    {
+      "hangul": "서다현",
+      "kana": "ソ・ダヒョン",
+      "memberNo": "S10"
+    },
+    {
+      "hangul": "코토네",
+      "kana": "コトネ",
+      "memberNo": "S11"
+    },
+    {
+      "hangul": "곽연지",
+      "kana": "クァク・ヨンジ",
+      "memberNo": "S12"
+    },
+    {
+      "hangul": "니엔",
+      "kana": "ニエン",
+      "memberNo": "S13"
+    },
+    {
+      "hangul": "박소현",
+      "kana": "パク・ソヒョン",
+      "memberNo": "S14"
+    },
+    {
+      "hangul": "신위",
+      "kana": "シンウィー",
+      "memberNo": "S15"
+    },
+    {
+      "hangul": "마유",
+      "kana": "マユ",
+      "memberNo": "S16"
+    },
+    {
+      "hangul": "린",
+      "kana": "リン",
+      "memberNo": "S17"
+    },
+    {
+      "hangul": "주빈",
+      "kana": "ジュ・ビン",
+      "memberNo": "S18"
+    },
+    {
+      "hangul": "정하연",
+      "kana": "チョン・ハヨン",
+      "memberNo": "S19"
+    },
+    {
+      "hangul": "박시온",
+      "kana": "パク・シオン",
+      "memberNo": "S20"
+    },
+    {
+      "hangul": "김채원",
+      "kana": "キム・チェウォン",
+      "memberNo": "S21"
+    },
+    {
+      "hangul": "설린",
+      "kana": "ソルリン",
+      "memberNo": "S22"
+    },
+    {
+      "hangul": "서아",
+      "kana": "ソア",
+      "memberNo": "S23"
+    },
+    {
+      "hangul": "지연",
+      "kana": "ジヨン",
+      "memberNo": "S24"
+    }
+  ],
   "entries": {
-    "트리플에스": "トリプルエス"
+    "트리플에스": "トリプルエス",
+    "윤서연": "ユン・ソヨン",
+    "정혜린": "チョン・ヘリン",
+    "이지우": "イ・ジウ",
+    "김채연": "キム・チェヨン",
+    "김유연": "キム・ユヨン",
+    "김수민": "キム・スミン",
+    "김나경": "キム・ナギョン",
+    "공유빈": "コン・ユビン",
+    "카에데": "カエデ",
+    "서다현": "ソ・ダヒョン",
+    "코토네": "コトネ",
+    "곽연지": "クァク・ヨンジ",
+    "니엔": "ニエン",
+    "박소현": "パク・ソヒョン",
+    "신위": "シンウィー",
+    "마유": "マユ",
+    "린": "リン",
+    "주빈": "ジュ・ビン",
+    "정하연": "チョン・ハヨン",
+    "박시온": "パク・シオン",
+    "김채원": "キム・チェウォン",
+    "설린": "ソルリン",
+    "서아": "ソア",
+    "지연": "ジヨン"
   }
 }
