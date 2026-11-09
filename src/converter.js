@@ -41,9 +41,10 @@ const CODA_FULL = {"ㄱ":"ク","ㄴ":"ン","ㄷ":"ッ","ㄹ":"ル","ㅁ":"ム","
 const VOICING_CODAS = new Set(["","ㄴ","ㄹ","ㅁ","ㅇ"]);
 const TENSE_ONSETS = new Set(["ㄲ","ㄸ","ㅃ","ㅆ","ㅉ"]);
 
-function renderOnset(unit, previous, ngStyle) {
+function renderOnset(unit, previous) {
+  // Initial ㅇ is a silent placeholder. A coda ㅇ is rendered separately as ン.
   if (unit.onset === "ㅇ") {
-    return (ngStyle === "na" ? "ン" : "") + (STANDALONE_VOWELS[unit.vowel] ?? "");
+    return STANDALONE_VOWELS[unit.vowel] ?? "";
   }
 
   const voiced = previous && previous.vowel && VOICING_CODAS.has(previous.coda ?? "");
@@ -67,7 +68,7 @@ function renderOnset(unit, previous, ngStyle) {
 }
 
 export function convert(text, options = {}) {
-  const { ng_style = "na", final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
+  const { final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
   const words = text.split(/(\s+)/u);
   return words.map(word => {
     if (!word || /^\s+$/u.test(word)) return word;
@@ -76,7 +77,7 @@ export function convert(text, options = {}) {
     let previous = null;
     return units.map(unit => {
       if (unit.raw !== undefined) { previous = null; return unit.raw; }
-      const onset = renderOnset(unit, previous, ng_style);
+      const onset = renderOnset(unit, previous);
       const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
       const coda = unit.coda ? (table[unit.coda] ?? "") : "";
       previous = unit;
@@ -90,7 +91,6 @@ export function convertWithDetails(text, options = {}) {
     input: text,
     output: convert(text, options),
     options: {
-      ng_style: options.ng_style ?? "na",
       final_style: options.final_style ?? "small",
       boundary_mode: options.boundary_mode ?? "independent"
     }
