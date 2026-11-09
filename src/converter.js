@@ -110,8 +110,8 @@ function convertWord(word, dictionary, final_style, boundary_mode, initialPrevio
   const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
   if (!keys.length) return convertPlain(word, final_style, boundary_mode, initialPrevious);
 
-  const opening = "「『([{\\\\"'“‘";
-  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\\"'”’";
+  const opening = "「『([{\\\"'“‘";
+  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\"'”’";
   const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" +
     keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
   let output = "";
