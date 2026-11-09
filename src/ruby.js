@@ -1,4 +1,4 @@
-import { convert } from "./converter.js";
+import { convert, getParticleVoicingContext } from "./converter.js";
 
 const HANGUL_PATTERN = /[가-힣ㄱ-ㅎㅏ-ㅣ]/u;
 
@@ -43,7 +43,8 @@ function renderToken(token, options) {
   }
   const rest = token.slice(cursor);
   if (rest) {
-    const reading = convert(rest, { ...options, dictionary: {} });
+    const context = getParticleVoicingContext(key, rest) ? "vowel" : null;
+    const reading = convert(rest, { ...options, dictionary: {}, initial_context: context });
     html += HANGUL_PATTERN.test(rest) && reading !== rest ? renderRuby(rest, reading) : escapeHtml(rest);
   }
   return html || escapeHtml(token);
