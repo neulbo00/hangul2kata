@@ -1,4 +1,4 @@
-import { convert, getParticleVoicingContext } from "./converter.js";
+import { convert, getParticleVoicingContext, getDictionaryLiaison } from "./converter.js";
 
 const HANGUL_PATTERN = /[가-힣ㄱ-ㅎㅏ-ㅣ]/u;
 
@@ -49,6 +49,17 @@ function renderToken(token, options) {
     // must remain outside the dictionary match (and outside the ruby annotation).
     if (suffix && !HANGUL_PATTERN.test(suffix)) continue;
     html += renderConvertedSegments(token.slice(cursor, keyStart), options);
+    const liaison = getDictionaryLiaison(key, String(dictionary[key]), suffix, options);
+    if (liaison) {
+      html += renderRuby(key, liaison.nameReading);
+      const particleText = suffix.match(/^[가-힣]+/u)?.[0] ?? "";
+      const trailingText = suffix.slice(particleText.length);
+      if (particleText) html += renderRuby(particleText, liaison.suffixReading);
+      if (trailingText) html += escapeHtml(trailingText);
+      cursor = token.length;
+      lastMatchedKey = null;
+      break;
+    }
     html += renderRuby(key, String(dictionary[key]));
     cursor = keyStart + key.length;
     lastMatchedKey = key;
