@@ -18,28 +18,35 @@ function renderRuby(base, reading) {
 
 function renderToken(token, options) {
   const dictionary = options.dictionary ?? {};
-
-  // Honor an exact dictionary entry for the complete whitespace-delimited token.
-  if (Object.prototype.hasOwnProperty.call(dictionary, token) && HANGUL_PATTERN.test(token)) {
-    const reading = String(dictionary[token]);
+  const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
+  if (!keys.length) {
+    const reading = convert(token, { ...options, dictionary: {} });
     return reading && reading !== token ? renderRuby(token, reading) : escapeHtml(token);
   }
-
-  const matches = Array.from(token.matchAll(/[가-힣ㄱ-ㅎㅏ-ㅣ]/gu));
-  if (matches.length === 0) return escapeHtml(token);
-
-  const first = matches[0].index;
-  const last = matches[matches.length - 1];
-  const end = last.index + last[0].length;
-  const prefix = token.slice(0, first);
-  const base = token.slice(first, end);
-  const suffix = token.slice(end);
-  // Match the converter's exact-token dictionary rule. Do not apply a bare-word
-  // dictionary key after punctuation has been split away for ruby placement.
-  const reading = convert(base, { ...options, dictionary: {} });
-
-  if (!reading || reading === base) return escapeHtml(token);
-  return escapeHtml(prefix) + renderRuby(base, reading) + escapeHtml(suffix);
+  const opening = "「『([{\\\"'“‘";
+  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\"'”’";
+  const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\\]\\\\]/gu, "\\\\$&");
+  const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" + keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
+  let html = "";
+  let cursor = 0;
+  for (const match of token.matchAll(pattern)) {
+    const prefix = match[1] ?? "";
+    const key = match[2];
+    const keyStart = match.index + prefix.length;
+    const before = token.slice(cursor, keyStart);
+    if (before) {
+      const reading = convert(before, { ...options, dictionary: {} });
+      html += HANGUL_PATTERN.test(before) && reading !== before ? renderRuby(before, reading) : escapeHtml(before);
+    }
+    html += renderRuby(key, String(dictionary[key]));
+    cursor = keyStart + key.length;
+  }
+  const rest = token.slice(cursor);
+  if (rest) {
+    const reading = convert(rest, { ...options, dictionary: {} });
+    html += HANGUL_PATTERN.test(rest) && reading !== rest ? renderRuby(rest, reading) : escapeHtml(rest);
+  }
+  return html || escapeHtml(token);
 }
 
 /**
