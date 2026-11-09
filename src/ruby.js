@@ -55,7 +55,7 @@ function renderToken(token, options) {
   }
   const rest = token.slice(cursor);
   if (rest) {
-    const context = lastMatchedKey && getParticleVoicingContext(lastMatchedKey, rest) ? "vowel" : null;
+    const context = lastMatchedKey ? getParticleVoicingContext(lastMatchedKey, rest) : null;
     html += renderConvertedSegments(rest, options, context);
   }
   return html || renderConvertedSegments(token, options);
