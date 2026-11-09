@@ -99,8 +99,6 @@ function getFinalPronunciationCoda(korean) {
 
 const LIAISON_ONSET = { "ㄱ":"ㄱ","ㄲ":"ㄲ","ㄴ":"ㄴ","ㄷ":"ㄷ","ㄹ":"ㄹ","ㅁ":"ㅁ","ㅂ":"ㅂ","ㅅ":"ㅅ","ㅆ":"ㅆ","ㅈ":"ㅈ","ㅊ":"ㅊ","ㅋ":"ㅋ","ㅌ":"ㅌ","ㅍ":"ㅍ" };
 const ONSET_INDEX = { "ㄱ":0,"ㄲ":1,"ㄴ":2,"ㄷ":3,"ㄸ":4,"ㄹ":5,"ㅁ":6,"ㅂ":7,"ㅃ":8,"ㅅ":9,"ㅆ":10,"ㅇ":11,"ㅈ":12,"ㅉ":13,"ㅊ":14,"ㅋ":15,"ㅌ":16,"ㅍ":17,"ㅎ":18 };
-const VOWEL_INDEX_BY_CHAR = { "ㅏ":0,"ㅐ":1,"ㅑ":2,"ㅒ":3,"ㅓ":4,"ㅔ":5,"ㅕ":6,"ㅖ":7,"ㅗ":8,"ㅘ":9,"ㅙ":10,"ㅚ":11,"ㅛ":12,"ㅜ":13,"ㅝ":14,"ㅞ":15,"ㅟ":16,"ㅠ":17,"ㅡ":18,"ㅢ":19,"ㅣ":20 };
-const CODA_INDEX_BY_CHAR = Object.fromEntries(CODA_BY_INDEX.map((value, index) => [value, index]));
 const LIAISON_CODA_KANA = {
   "ㄱ": ["ㇰ","ク"], "ㄲ": ["ㇰ","ク"], "ㄴ": ["ン","ン"], "ㄷ": ["ッ","ッ"],
   "ㄹ": ["ㇽ","ル"], "ㅁ": ["ㇺ","ム"], "ㅂ": ["ㇷ゚","プ"], "ㅅ": ["ッ","ッ"],
@@ -114,7 +112,7 @@ const LIAISON_CODA_KANA = {
  * first syllable is rebuilt with the carried consonant as its onset.
  */
 export function getDictionaryLiaison(koreanName, dictionaryReading, suffix, options = {}) {
-  const particle = ["으로","이","을","에","와","의"].find(value => suffix.startsWith(value));
+  const particle = ["으로","이","은","을","에","와","의"].find(value => suffix.startsWith(value));
   if (!particle) return null;
   const rest = suffix.slice(particle.length);
   const allowedFollowing = ["가","는","도","를","만","랑","며","요","과","와","에","에서","으로","은","이","을"];
