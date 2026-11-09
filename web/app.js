@@ -56,7 +56,7 @@ async function loadArtistDictionaries() {
     status.textContent = `${successCount}개 그룹 사전 적용됨`;
     status.classList.add("is-ready");
   } else {
-    status.textContent = `${successCount}/${ARTIST_DICTIONARY_FILES.length}개 사전 적용`;
+    status.textContent = `${successCount}/${Object.keys(ARTIST_DICTIONARY_FILES).length}개 사전 적용`;
     status.classList.add("is-partial");
   }
   update();
