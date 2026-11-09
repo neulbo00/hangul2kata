@@ -32,7 +32,7 @@ test("applies artist names inside sentences and before Korean particles", () => 
   const output = convert("베리베리가 강민은 박한빈을 만났어요. 윤서연도 왔어요!", { dictionary });
   assert.match(output, /ベリベリガ/u);
   assert.match(output, /カンミヌン/u);
-  assert.match(output, /パク・ハンビン/u);
+  assert.match(output, /パク・ハンビヌㇽ/u);
   assert.match(output, /ユン・ソヨン/u);
   assert.doesNotMatch(output, /베리베리|강민|박한빈|윤서연/u);
 });
@@ -49,7 +49,7 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   });
   const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map((match) => match[1]).join("");
   assert.match(readings, /ベリベリガ/u);
-  assert.match(readings, /カンミンウン/u);
+  assert.match(readings, /カンミヌン/u);
 });
 
 
