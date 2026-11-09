@@ -56,7 +56,8 @@ function renderOnset(unit, previous) {
   }
 
   if (Object.hasOwn(COMPOUND_SUFFIX, unit.vowel)) {
-    const uRow = ROWS[unit.onset]?.[3] ?? "";
+    const row = voiced && VOICED_ROWS[unit.onset] ? VOICED_ROWS[unit.onset] : ROWS[unit.onset];
+    const uRow = row?.[3] ?? "";
     return (TENSE_ONSETS.has(unit.onset) && previous ? "ッ" : "") + uRow + COMPOUND_SUFFIX[unit.vowel];
   }
 
@@ -67,9 +68,9 @@ function renderOnset(unit, previous) {
   return row?.[index] ?? "";
 }
 
-function convertPlain(text, final_style, boundary_mode) {
+function convertPlain(text, final_style, boundary_mode, initialPrevious = null) {
   const units = normalizeSyllables(text, boundary_mode);
-  let previous = null;
+  let previous = initialPrevious;
   return units.map(unit => {
     if (unit.raw !== undefined) { previous = null; return unit.raw; }
     const onset = renderOnset(unit, previous);
@@ -84,38 +85,67 @@ function escapeRegExp(value) {
   return value.split("").map(char => "\\^$.*+?()[]{}|".includes(char) ? "\\" + char : char).join("");
 }
 
-function convertWord(word, dictionary, final_style, boundary_mode) {
-  const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
-  if (!keys.length) return convertPlain(word, final_style, boundary_mode);
+const CODA_BY_INDEX = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+const SIMPLE_CODA = {"ㄳ":"ㄱ","ㄵ":"ㄴ","ㄶ":"ㄴ","ㄺ":"ㄱ","ㄻ":"ㅁ","ㄼ":"ㄹ","ㄽ":"ㄹ","ㄾ":"ㄹ","ㄿ":"ㅂ","ㅀ":"ㄹ","ㅄ":"ㅂ","ㄲ":"ㄱ","ㅆ":"ㄷ","ㅅ":"ㄷ","ㅈ":"ㄷ","ㅊ":"ㄷ","ㅋ":"ㄱ","ㅌ":"ㄷ","ㅍ":"ㅂ","ㅎ":"ㄷ"};
 
-  // Match dictionary names at token start or after opening punctuation.
-  // Permit common Korean particles and closing punctuation after the name.
+function getFinalPronunciationCoda(korean) {
+  const last = Array.from(korean).at(-1);
+  if (!last) return null;
+  const code = last.codePointAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) return null;
+  const rawCoda = CODA_BY_INDEX[(code - 0xAC00) % 28];
+  return SIMPLE_CODA[rawCoda] ?? rawCoda;
+}
+
+function isParticleSuffix(suffix) {
+  const particle = ["께서","에서","으로","하고","께","이","가","은","는","을","를","과","와","도","만","의","에","로","랑","며"]
+    .find(candidate => suffix.startsWith(candidate));
+  if (!particle) return false;
+  const next = suffix.slice(particle.length, particle.length + 1);
+  return !next || "!?.,:;」』)}\\\"'”’".includes(next);
+}
+
+export function getParticleVoicingContext(koreanName, suffix) {
+  const coda = getFinalPronunciationCoda(koreanName);
+  return coda !== null && VOICING_CODAS.has(coda) && isParticleSuffix(suffix)
+    ? { vowel: "ㅏ", coda }
+    : null;
+}
+
+function convertWord(word, dictionary, final_style, boundary_mode, initialPrevious = null) {
+  const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
+  if (!keys.length) return convertPlain(word, final_style, boundary_mode, initialPrevious);
+
   const opening = "「『([{\\\"'“‘";
   const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\"'”’";
   const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" +
     keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
   let output = "";
   let cursor = 0;
+  let previous = initialPrevious;
   for (const match of word.matchAll(pattern)) {
-    const start = match.index;
-    const full = match[0];
     const prefix = match[1] ?? "";
     const key = match[2];
-    const keyStart = start + prefix.length;
-    output += convertPlain(word.slice(cursor, keyStart), final_style, boundary_mode);
+    const keyStart = match.index + prefix.length;
+    output += convertPlain(word.slice(cursor, keyStart), final_style, boundary_mode, previous);
+    previous = null;
     output += dictionary[key];
     cursor = keyStart + key.length;
+    previous = getParticleVoicingContext(key, word.slice(cursor));
   }
-  output += convertPlain(word.slice(cursor), final_style, boundary_mode);
+  output += convertPlain(word.slice(cursor), final_style, boundary_mode, previous);
   return output;
 }
 
 export function convert(text, options = {}) {
-  const { final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
+  const { final_style = "small", boundary_mode = "independent", dictionary = {}, initial_context = null } = options;
   const words = text.split(/(\s+)/u);
+  let context = initial_context;
   return words.map(word => {
     if (!word || /^\s+$/u.test(word)) return word;
-    return convertWord(word, dictionary, final_style, boundary_mode);
+    const previous = context === "vowel" ? { vowel: "ㅏ", coda: "" } : (context && typeof context === "object" ? context : null);
+    context = null;
+    return convertWord(word, dictionary, final_style, boundary_mode, previous);
   }).join("");
 }
 

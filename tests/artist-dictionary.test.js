@@ -30,7 +30,7 @@ test("applies artist names inside sentences and before Korean particles", () => 
     "윤서연": "ユン・ソヨン"
   };
   const output = convert("베리베리가 강민은 박한빈을 만났어요. 윤서연도 왔어요!", { dictionary });
-  assert.match(output, /ベリベリカ/u);
+  assert.match(output, /ベリベリガ/u);
   assert.match(output, /カンミンウン/u);
   assert.match(output, /パク・ハンビン/u);
   assert.match(output, /ユン・ソヨン/u);
@@ -47,6 +47,43 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   const html = toRubyHtml("베리베리가 강민은", {
     dictionary: { "베리베리": "ベリベリ", "강민": "カンミン" }
   });
-  assert.match(html, /ベリベリカ/u);
-  assert.match(html, /カンミンウン/u);
+  const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map((match) => match[1]).join("");
+  assert.match(readings, /ベリベリガ/u);
+  assert.match(readings, /カンミンウン/u);
+});
+
+
+test("voices initial lax consonants in particles after vowel-final dictionary names", () => {
+  const dictionary = { "베리베리": "ベリベリ" };
+  assert.equal(convert("베리베리가", { dictionary }), "ベリベリガ");
+  assert.equal(convert("베리베리도", { dictionary }), "ベリベリド");
+  assert.equal(convert("베리베리과", { dictionary }), "ベリベリグァ");
+});
+
+test("does not voice particles after consonant-final dictionary names", () => {
+  const dictionary = { "강민": "カンミン" };
+  assert.equal(convert("강민이", { dictionary }), "カンミンイ");
+});
+
+
+test("voices particles after dictionary names ending in sonorant codas", () => {
+  const dictionary = { "강민": "カンミン", "윤서연": "ユン・ソヨン" };
+  assert.equal(convert("강민도", { dictionary }), "カンミンド");
+  assert.equal(convert("윤서연도", { dictionary }), "ユン・ソヨンド");
+});
+
+test("user dictionary entries use the same sonorant-coda particle voicing", () => {
+  const dictionary = { "강민": "カンミン" };
+  assert.equal(convert("강민도", { dictionary }), "カンミンド");
+});
+
+test("ordinary words voice particles after sonorant codas", () => {
+  assert.equal(convert("강민도",), "カンミンド");
+  assert.equal(convert("사과도"), "サグァド");
+});
+
+test("ruby preview preserves sonorant-coda voicing after dictionary names", () => {
+  const html = toRubyHtml("강민도", { dictionary: { "강민": "カンミン" } });
+  const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map(match => match[1]).join("");
+  assert.match(readings, /カンミンド/u);
 });
