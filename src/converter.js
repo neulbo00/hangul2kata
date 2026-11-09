@@ -116,7 +116,9 @@ export function getDictionaryLiaison(koreanName, dictionaryReading, suffix, opti
   if (!particle) return null;
   const rest = suffix.slice(particle.length);
   const allowedFollowing = ["가","는","도","를","만","랑","며","요","과","와","에","에서","으로","은","이","을"];
-  if (rest && !allowedFollowing.some(value => rest.startsWith(value)) && !/^[!?.,:;」』)\\]}]/u.test(rest)) return null;
+  const firstRestChar = Array.from(rest)[0];
+  const punctuation = new Set(["!","?",".",",",":",";","」","』",")","]","}"]);
+  if (rest && !allowedFollowing.some(value => rest.startsWith(value)) && !punctuation.has(firstRestChar)) return null;
 
   const last = Array.from(koreanName).at(-1);
   if (!last) return null;
