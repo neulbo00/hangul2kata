@@ -85,11 +85,16 @@ function escapeRegExp(value) {
   return value.split("").map(char => "\\^$.*+?()[]{}|".includes(char) ? "\\" + char : char).join("");
 }
 
-function hasOpenVowelEnding(korean) {
+const CODA_BY_INDEX = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+const SIMPLE_CODA = {"ㄳ":"ㄱ","ㄵ":"ㄴ","ㄶ":"ㄴ","ㄺ":"ㄱ","ㄻ":"ㅁ","ㄼ":"ㄹ","ㄽ":"ㄹ","ㄾ":"ㄹ","ㄿ":"ㅂ","ㅀ":"ㄹ","ㅄ":"ㅂ","ㄲ":"ㄱ","ㅆ":"ㄷ","ㅅ":"ㄷ","ㅈ":"ㄷ","ㅊ":"ㄷ","ㅋ":"ㄱ","ㅌ":"ㄷ","ㅍ":"ㅂ","ㅎ":"ㄷ"};
+
+function getFinalPronunciationCoda(korean) {
   const last = Array.from(korean).at(-1);
-  if (!last) return false;
+  if (!last) return null;
   const code = last.codePointAt(0);
-  return code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 === 0;
+  if (code < 0xAC00 || code > 0xD7A3) return null;
+  const rawCoda = CODA_BY_INDEX[(code - 0xAC00) % 28];
+  return SIMPLE_CODA[rawCoda] ?? rawCoda;
 }
 
 function isParticleSuffix(suffix) {
@@ -97,12 +102,13 @@ function isParticleSuffix(suffix) {
     .find(candidate => suffix.startsWith(candidate));
   if (!particle) return false;
   const next = suffix.slice(particle.length, particle.length + 1);
-  return !next || "!?.,:;」』)}]\\\"'”’".includes(next);
+  return !next || "!?.,:;」』)}\\\"'”’".includes(next);
 }
 
 export function getParticleVoicingContext(koreanName, suffix) {
-  return hasOpenVowelEnding(koreanName) && isParticleSuffix(suffix)
-    ? { vowel: "ㅏ", coda: "" }
+  const coda = getFinalPronunciationCoda(koreanName);
+  return coda !== null && VOICING_CODAS.has(coda) && isParticleSuffix(suffix)
+    ? { vowel: "ㅏ", coda }
     : null;
 }
 
