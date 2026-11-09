@@ -58,3 +58,11 @@ footer{text-align:center;color:#657084;font-size:10px;margin-top:24px}
 .artist-example span{font-size:10px;color:var(--accent);font-weight:500}
 .artist-example.all{background:#c3ceff;color:#111827;border-color:#c3ceff}
 @media(max-width:700px){.artist-examples-head{align-items:flex-start;flex-direction:column;gap:6px}.artist-example-buttons{display:grid;grid-template-columns:1fr 1fr}.artist-example{justify-content:space-between}.artist-example.all{grid-column:1/-1;justify-content:center}}
+
+.artist-dictionary-details{margin-top:14px;padding:14px;background:#111722;border:1px solid var(--line);border-radius:10px}
+.artist-dictionary-details[hidden]{display:none}
+.artist-dictionary-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.artist-dictionary-details-head strong{font-size:12px}
+#loadedArtistCount{font-size:11px;color:var(--muted);margin:8px 0}
+#loadedArtistEntries{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:5px 16px;max-height:220px;overflow:auto;margin:0;padding:0;list-style:none}
+#loadedArtistEntries li{font-size:11px;color:var(--text);padding:4px 0;border-bottom:1px solid #252d3a}
