@@ -5,7 +5,13 @@ const $ = (id) => document.getElementById(id);
 const source = $("source");
 const result = $("result");
 const STORAGE_KEY = "hangul2kata.dictionary.v1";
+const ARTIST_DICTIONARY_FILES = [
+  "./dictionaries/VERIVERY.json",
+  "./dictionaries/EVNNE.json",
+  "./dictionaries/tripleS.json"
+];
 let dictionary = {};
+let artistDictionary = {};
 
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -24,10 +30,42 @@ function saveDictionary() {
   }
 }
 
+async function loadArtistDictionaries() {
+  const loaded = await Promise.allSettled(ARTIST_DICTIONARY_FILES.map(async (path) => {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`사전 파일을 불러오지 못했습니다: ${path}`);
+    const data = await response.json();
+    if (!data || typeof data.entries !== "object" || Array.isArray(data.entries) ||
+        Object.entries(data.entries).some(([key, value]) => typeof key !== "string" || typeof value !== "string")) {
+      throw new Error(`사전 파일 형식이 올바르지 않습니다: ${path}`);
+    }
+    return data.entries;
+  }));
+
+  artistDictionary = {};
+  let successCount = 0;
+  for (const item of loaded) {
+    if (item.status === "fulfilled") {
+      Object.assign(artistDictionary, item.value);
+      successCount += 1;
+    }
+  }
+
+  const status = $("artistDictionaryStatus");
+  if (successCount === ARTIST_DICTIONARY_FILES.length) {
+    status.textContent = `${successCount}개 그룹 사전 적용됨`;
+    status.classList.add("is-ready");
+  } else {
+    status.textContent = `${successCount}/${ARTIST_DICTIONARY_FILES.length}개 사전 적용`;
+    status.classList.add("is-partial");
+  }
+  update();
+}
+
 function getOptions() {
   return {
     final_style: $("finalStyle").value,
-    dictionary
+    dictionary: { ...artistDictionary, ...dictionary }
   };
 }
 
@@ -36,7 +74,7 @@ function renderDictionary() {
   list.replaceChildren();
   Object.entries(dictionary).forEach(([key, value]) => {
     const li = document.createElement("li");
-    li.textContent = key + " → " + value + " ";
+    li.append(document.createTextNode(key + " → " + value + " "));
     const remove = document.createElement("button");
     remove.textContent = "삭제";
     remove.className = "subtle";
@@ -69,6 +107,13 @@ source.addEventListener("input", () => {
   inputTimer = setTimeout(update, 150);
 });
 $("finalStyle").addEventListener("change", update);
+document.querySelectorAll("[data-sample]").forEach((button) => {
+  button.addEventListener("click", () => {
+    source.value = button.dataset.sample || "";
+    update();
+    source.focus();
+  });
+});
 $("clearBtn").addEventListener("click", () => { source.value = ""; update(); source.focus(); });
 $("copyBtn").addEventListener("click", async () => {
   try {
@@ -128,3 +173,7 @@ $("importDict").addEventListener("change", async (event) => {
 });
 renderDictionary();
 update();
+loadArtistDictionaries().catch(() => {
+  $("artistDictionaryStatus").textContent = "아티스트 사전 불러오기 실패";
+  $("artistDictionaryStatus").classList.add("is-partial");
+});
