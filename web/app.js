@@ -1,4 +1,5 @@
 import { convert } from "../src/index.js";
+import { toRubyHtml } from "../src/ruby.js";
 
 const $ = (id) => document.getElementById(id);
 const source = $("source");
@@ -23,6 +24,13 @@ function saveDictionary() {
   }
 }
 
+function getOptions() {
+  return {
+    final_style: $("finalStyle").value,
+    dictionary
+  };
+}
+
 function renderDictionary() {
   const list = $("dictList");
   list.replaceChildren();
@@ -44,11 +52,14 @@ function renderDictionary() {
 }
 
 function update() {
-  const options = {
-    final_style: $("finalStyle").value,
-    dictionary
-  };
+  const options = getOptions();
   result.value = convert(source.value, options);
+  const rubyPreview = $("rubyPreview");
+  if (source.value) {
+    rubyPreview.innerHTML = toRubyHtml(source.value, options);
+  } else {
+    rubyPreview.textContent = "한글 원문을 입력하면 여기에 루비 미리보기가 표시됩니다.";
+  }
   $("charCount").textContent = Array.from(source.value).length + "자";
 }
 
@@ -67,6 +78,16 @@ $("copyBtn").addEventListener("click", async () => {
   } catch {
     result.select();
     document.execCommand("copy");
+  }
+});
+$("copyRubyHtml").addEventListener("click", async () => {
+  const button = $("copyRubyHtml");
+  try {
+    await navigator.clipboard.writeText(toRubyHtml(source.value, getOptions()));
+    button.textContent = "HTML 복사 완료";
+    setTimeout(() => button.textContent = "HTML 코드 복사", 1400);
+  } catch {
+    alert("클립보드에 복사하지 못했습니다. 브라우저의 클립보드 권한을 확인해 주세요.");
   }
 });
 $("addDict").addEventListener("click", () => {
