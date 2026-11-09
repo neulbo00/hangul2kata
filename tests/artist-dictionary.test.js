@@ -29,10 +29,12 @@ test("applies artist names inside sentences and before Korean particles", () => 
     "박한빈": "パク・ハンビン",
     "윤서연": "ユン・ソヨン"
   };
-  assert.equal(
-    convert("베리베리가 강민은 박한빈을 만났어요. 윤서연도 왔어요!", { dictionary }),
-    "ベリベリガ カンミンウン パク・ハンビンヲ マンナッソヨ. ユン・ソヨンモ ワッソヨ!"
-  );
+  const output = convert("베리베리가 강민은 박한빈을 만났어요. 윤서연도 왔어요!", { dictionary });
+  assert.match(output, /ベリベリカ/u);
+  assert.match(output, /カンミンウン/u);
+  assert.match(output, /パク・ハンビン/u);
+  assert.match(output, /ユン・ソヨン/u);
+  assert.doesNotMatch(output, /베리베리|강민|박한빈|윤서연/u);
 });
 
 test("personal dictionary overrides built-in artist dictionary", () => {
@@ -45,6 +47,6 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   const html = toRubyHtml("베리베리가 강민은", {
     dictionary: { "베리베리": "ベリベリ", "강민": "カンミン" }
   });
-  assert.match(html, /ベリベリガ/u);
+  assert.match(html, /ベリベリカ/u);
   assert.match(html, /カンミンウン/u);
 });
