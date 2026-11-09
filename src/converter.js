@@ -143,7 +143,7 @@ export function convert(text, options = {}) {
   let context = initial_context;
   return words.map(word => {
     if (!word || /^\s+$/u.test(word)) return word;
-    const previous = context === "vowel" ? { vowel: "ㅏ", coda: "" } : null;
+    const previous = context === "vowel" ? { vowel: "ㅏ", coda: "" } : (context && typeof context === "object" ? context : null);
     context = null;
     return convertWord(word, dictionary, final_style, boundary_mode, previous);
   }).join("");
