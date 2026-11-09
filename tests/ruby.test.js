@@ -36,3 +36,10 @@ test("escapes HTML in the original text and generated reading", () => {
     '<span lang="ko" style="white-space: pre-wrap;"><ruby>안녕<rp>（</rp><rt lang="ja">&lt;script&gt;alert(1)&lt;/script&gt;</rt><rp>）</rp></ruby></span>'
   );
 });
+
+test("does not apply a dictionary key to a token with extra punctuation", () => {
+  assert.equal(
+    toRubyHtml("안녕!", { dictionary: { "안녕": "辞書読み" } }),
+    '<span lang="ko" style="white-space: pre-wrap;"><ruby>안녕<rp>（</rp><rt lang="ja">アンニョン</rt><rp>）</rp></ruby>!</span>'
+  );
+});
