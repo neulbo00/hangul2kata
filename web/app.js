@@ -5,11 +5,11 @@ const $ = (id) => document.getElementById(id);
 const source = $("source");
 const result = $("result");
 const STORAGE_KEY = "hangul2kata.dictionary.v1";
-const ARTIST_DICTIONARY_FILES = [
-  "./dictionaries/VERIVERY.json",
-  "./dictionaries/EVNNE.json",
-  "./dictionaries/tripleS.json"
-];
+const ARTIST_DICTIONARY_FILES = {
+  VERIVERY: "./dictionaries/VERIVERY.json",
+  EVNNE: "./dictionaries/EVNNE.json",
+  tripleS: "./dictionaries/tripleS.json"
+};
 let dictionary = {};
 let artistDictionary = {};
 
@@ -31,7 +31,7 @@ function saveDictionary() {
 }
 
 async function loadArtistDictionaries() {
-  const loaded = await Promise.allSettled(ARTIST_DICTIONARY_FILES.map(async (path) => {
+  const loaded = await Promise.allSettled(Object.values(ARTIST_DICTIONARY_FILES).map(async (path) => {
     const response = await fetch(path);
     if (!response.ok) throw new Error(`사전 파일을 불러오지 못했습니다: ${path}`);
     const data = await response.json();
@@ -52,7 +52,7 @@ async function loadArtistDictionaries() {
   }
 
   const status = $("artistDictionaryStatus");
-  if (successCount === ARTIST_DICTIONARY_FILES.length) {
+  if (successCount === Object.keys(ARTIST_DICTIONARY_FILES).length) {
     status.textContent = `${successCount}개 그룹 사전 적용됨`;
     status.classList.add("is-ready");
   } else {
@@ -107,12 +107,62 @@ source.addEventListener("input", () => {
   inputTimer = setTimeout(update, 150);
 });
 $("finalStyle").addEventListener("change", update);
-document.querySelectorAll("[data-sample]").forEach((button) => {
-  button.addEventListener("click", () => {
-    source.value = button.dataset.sample || "";
-    update();
-    source.focus();
+const artistExamples = {
+  VERIVERY: "베리베리의 강민과 동헌이 무대에 섭니다.",
+  EVNNE: "이븐의 박한빈과 케이타가 무대에 섭니다.",
+  tripleS: "트리플에스의 윤서연과 김유연이 무대에 섭니다.",
+  ALL: "베리베리의 강민, 이븐의 박한빈, 트리플에스의 윤서연이 함께 무대에 섭니다."
+};
+
+async function loadArtistJson(group) {
+  const groups = group === "ALL" ? Object.keys(ARTIST_DICTIONARY_FILES) : [group];
+  const results = await Promise.all(groups.map(async (name) => {
+    const response = await fetch(ARTIST_DICTIONARY_FILES[name]);
+    if (!response.ok) throw new Error(name + " JSON을 불러오지 못했습니다.");
+    const data = await response.json();
+    if (!data || typeof data.entries !== "object" || Array.isArray(data.entries) || !Array.isArray(data.members) ||
+        Object.entries(data.entries).some(([key, value]) => typeof key !== "string" || typeof value !== "string")) {
+      throw new Error(name + " JSON 형식이 올바르지 않습니다.");
+    }
+    return data;
+  }));
+  for (const data of results) Object.assign(artistDictionary, data.entries);
+  const names = results.flatMap(data => Object.entries(data.entries));
+  $("artistDictionaryDetails").hidden = false;
+  $("loadedArtistTitle").textContent = group === "ALL" ? "세 그룹 사전" : results[0].group + " 사전";
+  $("loadedArtistCount").textContent = results.length + "개 JSON 파일 · " + names.length + "개 표기 항목 불러옴";
+  const list = $("loadedArtistEntries");
+  list.replaceChildren();
+  for (const [hangul, kana] of names) {
+    const item = document.createElement("li");
+    item.textContent = hangul + " → " + kana;
+    list.append(item);
+  }
+  $("testArtistExample").dataset.group = group;
+  update();
+}
+
+document.querySelectorAll("[data-artist]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const group = button.dataset.artist;
+    const status = $("artistDictionaryStatus");
+    status.textContent = "JSON 불러오는 중…";
+    try {
+      await loadArtistJson(group);
+      status.textContent = group === "ALL" ? "세 그룹 JSON 불러오기 완료" : group + " JSON 불러오기 완료";
+      status.classList.add("is-ready");
+    } catch (error) {
+      status.textContent = "JSON 불러오기 실패";
+      status.classList.add("is-partial");
+      alert(error.message);
+    }
   });
+});
+
+$("testArtistExample").addEventListener("click", () => {
+  source.value = artistExamples[$("testArtistExample").dataset.group] || "";
+  update();
+  source.focus();
 });
 $("clearBtn").addEventListener("click", () => { source.value = ""; update(); source.focus(); });
 $("copyBtn").addEventListener("click", async () => {
