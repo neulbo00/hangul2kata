@@ -97,6 +97,56 @@ function getFinalPronunciationCoda(korean) {
   return SIMPLE_CODA[rawCoda] ?? rawCoda;
 }
 
+const LIAISON_ONSET = { "ㄱ":"ㄱ","ㄲ":"ㄲ","ㄴ":"ㄴ","ㄷ":"ㄷ","ㄹ":"ㄹ","ㅁ":"ㅁ","ㅂ":"ㅂ","ㅅ":"ㅅ","ㅆ":"ㅆ","ㅈ":"ㅈ","ㅊ":"ㅊ","ㅋ":"ㅋ","ㅌ":"ㅌ","ㅍ":"ㅍ" };
+const ONSET_INDEX = { "ㄱ":0,"ㄲ":1,"ㄴ":2,"ㄷ":3,"ㄸ":4,"ㄹ":5,"ㅁ":6,"ㅂ":7,"ㅃ":8,"ㅅ":9,"ㅆ":10,"ㅇ":11,"ㅈ":12,"ㅉ":13,"ㅊ":14,"ㅋ":15,"ㅌ":16,"ㅍ":17,"ㅎ":18 };
+const VOWEL_INDEX_BY_CHAR = { "ㅏ":0,"ㅐ":1,"ㅑ":2,"ㅒ":3,"ㅓ":4,"ㅔ":5,"ㅕ":6,"ㅖ":7,"ㅗ":8,"ㅘ":9,"ㅙ":10,"ㅚ":11,"ㅛ":12,"ㅜ":13,"ㅝ":14,"ㅞ":15,"ㅟ":16,"ㅠ":17,"ㅡ":18,"ㅢ":19,"ㅣ":20 };
+const CODA_INDEX_BY_CHAR = Object.fromEntries(CODA_BY_INDEX.map((value, index) => [value, index]));
+const LIAISON_CODA_KANA = {
+  "ㄱ": ["ㇰ","ク"], "ㄲ": ["ㇰ","ク"], "ㄴ": ["ン","ン"], "ㄷ": ["ッ","ッ"],
+  "ㄹ": ["ㇽ","ル"], "ㅁ": ["ㇺ","ム"], "ㅂ": ["ㇷ゚","プ"], "ㅅ": ["ッ","ッ"],
+  "ㅆ": ["ッ","ッ"], "ㅈ": ["ッ","ッ"], "ㅊ": ["ッ","ッ"], "ㅋ": ["ㇰ","ク"],
+  "ㅌ": ["ッ","ッ"], "ㅍ": ["ㇷ゚","プ"]
+};
+
+/**
+ * Moves a simple final consonant onto a vowel-initial Korean particle.
+ * The dictionary reading is shortened by its coda kana, then the particle's
+ * first syllable is rebuilt with the carried consonant as its onset.
+ */
+export function getDictionaryLiaison(koreanName, dictionaryReading, suffix, options = {}) {
+  const particle = ["으로","이","을","에","와","의"].find(value => suffix.startsWith(value));
+  if (!particle) return null;
+  const rest = suffix.slice(particle.length);
+  const allowedFollowing = ["가","는","도","를","만","랑","며","요","과","와","에","에서","으로","은","이","을"];
+  if (rest && !allowedFollowing.some(value => rest.startsWith(value)) && !/^[!?.,:;」』)\\]}]/u.test(rest)) return null;
+
+  const last = Array.from(koreanName).at(-1);
+  if (!last) return null;
+  const code = last.codePointAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) return null;
+  const rawCoda = CODA_BY_INDEX[(code - 0xAC00) % 28];
+  const onset = LIAISON_ONSET[rawCoda];
+  const kana = LIAISON_CODA_KANA[rawCoda];
+  if (!onset || !kana || (particle === "으로" && rawCoda === "ㄹ")) return null;
+
+  const finalStyle = options.final_style ?? "small";
+  const codaKana = kana[finalStyle === "full" ? 1 : 0];
+  if (!dictionaryReading.endsWith(codaKana)) return null;
+
+  const first = particle[0];
+  const firstCode = first.codePointAt(0);
+  if (firstCode < 0xAC00 || firstCode > 0xD7A3) return null;
+  const offset = firstCode - 0xAC00;
+  const vowelIndex = Math.floor((offset % 588) / 28);
+  const codaIndex = offset % 28;
+  const rebuilt = String.fromCodePoint(0xAC00 + ONSET_INDEX[onset] * 588 + vowelIndex * 28 + codaIndex);
+  const transformedSuffix = rebuilt + suffix.slice(1);
+  return {
+    nameReading: dictionaryReading.slice(0, -codaKana.length),
+    suffixReading: convertPlain(transformedSuffix, finalStyle, options.boundary_mode ?? "independent")
+  };
+}
+
 function isParticleSuffix(suffix) {
   const particle = ["께서","에서","으로","하고","께","이","가","은","는","을","를","과","와","도","만","의","에","로","랑","며"]
     .find(candidate => suffix.startsWith(candidate));
@@ -129,9 +179,17 @@ function convertWord(word, dictionary, final_style, boundary_mode, initialPrevio
     const keyStart = match.index + prefix.length;
     output += convertPlain(word.slice(cursor, keyStart), final_style, boundary_mode, previous);
     previous = null;
+    const suffix = word.slice(keyStart + key.length);
+    const liaison = getDictionaryLiaison(key, String(dictionary[key]), suffix, { final_style, boundary_mode });
+    if (liaison) {
+      output += liaison.nameReading + liaison.suffixReading;
+      cursor = word.length;
+      previous = null;
+      break;
+    }
     output += dictionary[key];
     cursor = keyStart + key.length;
-    previous = getParticleVoicingContext(key, word.slice(cursor));
+    previous = getParticleVoicingContext(key, suffix);
   }
   output += convertPlain(word.slice(cursor), final_style, boundary_mode, previous);
   return output;
