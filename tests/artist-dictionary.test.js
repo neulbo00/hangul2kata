@@ -47,8 +47,9 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   const html = toRubyHtml("베리베리가 강민은", {
     dictionary: { "베리베리": "ベリベリ", "강민": "カンミン" }
   });
-  assert.match(html, /ベリベリガ/u);
-  assert.match(html, /カンミンウン/u);
+  const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\\/rt>/gu)].map((match) => match[1]).join("");
+  assert.match(readings, /ベリベリガ/u);
+  assert.match(readings, /カンミンウン/u);
 });
 
 
