@@ -81,7 +81,7 @@ function convertPlain(text, final_style, boundary_mode) {
 }
 
 function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  return value.split("").map(char => "\\^$.*+?()[]{}|".includes(char) ? "\\" + char : char).join("");
 }
 
 function convertWord(word, dictionary, final_style, boundary_mode) {
@@ -112,9 +112,9 @@ function convertWord(word, dictionary, final_style, boundary_mode) {
 
 export function convert(text, options = {}) {
   const { final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
-  const words = text.split(/(\\s+)/u);
+  const words = text.split(/(\s+)/u);
   return words.map(word => {
-    if (!word || /^\\s+$/u.test(word)) return word;
+    if (!word || /^\s+$/u.test(word)) return word;
     return convertWord(word, dictionary, final_style, boundary_mode);
   }).join("");
 }
