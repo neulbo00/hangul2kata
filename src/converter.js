@@ -179,13 +179,8 @@ function convertWord(word, dictionary, final_style, boundary_mode, initialPrevio
     output += convertPlain(word.slice(cursor, keyStart), final_style, boundary_mode, previous);
     previous = null;
     const suffix = word.slice(keyStart + key.length);
-    const liaison = getDictionaryLiaison(key, String(dictionary[key]), suffix, { final_style, boundary_mode });
-    if (liaison) {
-      output += liaison.nameReading + liaison.suffixReading;
-      cursor = word.length;
-      previous = null;
-      break;
-    }
+    // Keep the dictionary reading intact. Particles are converted separately;
+    // dictionary-name codas must not be moved onto vowel-initial particles.
     output += dictionary[key];
     cursor = keyStart + key.length;
     previous = getParticleVoicingContext(key, suffix);
