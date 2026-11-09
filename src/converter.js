@@ -129,9 +129,8 @@ export function getDictionaryLiaison(koreanName, dictionaryReading, suffix, opti
   const kana = LIAISON_CODA_KANA[rawCoda];
   if (!onset || !kana || (particle === "으로" && rawCoda === "ㄹ")) return null;
 
-  const finalStyle = options.final_style ?? "small";
-  const codaKana = kana[finalStyle === "full" ? 1 : 0];
-  if (!dictionaryReading.endsWith(codaKana)) return null;
+  const codaKana = kana.find(value => dictionaryReading.endsWith(value));
+  if (!codaKana) return null;
 
   const first = particle[0];
   const firstCode = first.codePointAt(0);
