@@ -67,22 +67,55 @@ function renderOnset(unit, previous) {
   return row?.[index] ?? "";
 }
 
+function convertPlain(text, final_style, boundary_mode) {
+  const units = normalizeSyllables(text, boundary_mode);
+  let previous = null;
+  return units.map(unit => {
+    if (unit.raw !== undefined) { previous = null; return unit.raw; }
+    const onset = renderOnset(unit, previous);
+    const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
+    const coda = unit.coda ? (table[unit.coda] ?? "") : "";
+    previous = unit;
+    return onset + coda;
+  }).join("");
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
+function convertWord(word, dictionary, final_style, boundary_mode) {
+  const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
+  if (!keys.length) return convertPlain(word, final_style, boundary_mode);
+
+  // Match dictionary names at token start or after opening punctuation.
+  // Permit common Korean particles and closing punctuation after the name.
+  const opening = "「『([{\\\"'“‘";
+  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\"'”’";
+  const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" +
+    keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
+  let output = "";
+  let cursor = 0;
+  for (const match of word.matchAll(pattern)) {
+    const start = match.index;
+    const full = match[0];
+    const prefix = match[1] ?? "";
+    const key = match[2];
+    const keyStart = start + prefix.length;
+    output += convertPlain(word.slice(cursor, keyStart), final_style, boundary_mode);
+    output += dictionary[key];
+    cursor = keyStart + key.length;
+  }
+  output += convertPlain(word.slice(cursor), final_style, boundary_mode);
+  return output;
+}
+
 export function convert(text, options = {}) {
   const { final_style = "small", boundary_mode = "independent", dictionary = {} } = options;
-  const words = text.split(/(\s+)/u);
+  const words = text.split(/(\\s+)/u);
   return words.map(word => {
-    if (!word || /^\s+$/u.test(word)) return word;
-    if (Object.prototype.hasOwnProperty.call(dictionary, word)) return dictionary[word];
-    const units = normalizeSyllables(word, boundary_mode);
-    let previous = null;
-    return units.map(unit => {
-      if (unit.raw !== undefined) { previous = null; return unit.raw; }
-      const onset = renderOnset(unit, previous);
-      const table = final_style === "full" ? CODA_FULL : CODA_SMALL;
-      const coda = unit.coda ? (table[unit.coda] ?? "") : "";
-      previous = unit;
-      return onset + coda;
-    }).join("");
+    if (!word || /^\\s+$/u.test(word)) return word;
+    return convertWord(word, dictionary, final_style, boundary_mode);
   }).join("");
 }
 
