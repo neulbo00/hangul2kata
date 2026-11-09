@@ -34,7 +34,9 @@ function renderToken(token, options) {
   const prefix = token.slice(0, first);
   const base = token.slice(first, end);
   const suffix = token.slice(end);
-  const reading = convert(base, options);
+  // Match the converter's exact-token dictionary rule. Do not apply a bare-word
+  // dictionary key after punctuation has been split away for ruby placement.
+  const reading = convert(base, { ...options, dictionary: {} });
 
   if (!reading || reading === base) return escapeHtml(token);
   return escapeHtml(prefix) + renderRuby(base, reading) + escapeHtml(suffix);
