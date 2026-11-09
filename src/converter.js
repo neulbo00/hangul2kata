@@ -142,7 +142,7 @@ export function getDictionaryLiaison(koreanName, dictionaryReading, suffix, opti
   const transformedSuffix = rebuilt + suffix.slice(1);
   return {
     nameReading: dictionaryReading.slice(0, -codaKana.length),
-    suffixReading: convertPlain(transformedSuffix, finalStyle, options.boundary_mode ?? "independent")
+    suffixReading: convertPlain(transformedSuffix, options.final_style ?? "small", options.boundary_mode ?? "independent")
   };
 }
 
