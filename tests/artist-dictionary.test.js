@@ -31,8 +31,8 @@ test("applies artist names inside sentences and before Korean particles", () => 
   };
   const output = convert("베리베리가 강민은 박한빈을 만났어요. 윤서연도 왔어요!", { dictionary });
   assert.match(output, /ベリベリガ/u);
-  assert.match(output, /カンミヌン/u);
-  assert.match(output, /パク・ハンビヌㇽ/u);
+  assert.match(output, /カンミンウン/u);
+  assert.match(output, /パク・ハンビンウㇽ/u);
   assert.match(output, /ユン・ソヨン/u);
   assert.doesNotMatch(output, /베리베리|강민|박한빈|윤서연/u);
 });
@@ -49,7 +49,7 @@ test("ruby preview uses artist dictionary matches with particles", () => {
   });
   const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map((match) => match[1]).join("");
   assert.match(readings, /ベリベリガ/u);
-  assert.match(readings, /カンミヌン/u);
+  assert.match(readings, /カンミンウン/u);
 });
 
 
@@ -62,24 +62,24 @@ test("voices initial lax consonants in particles after vowel-final dictionary na
 
 test("links consonant-final dictionary names to vowel-initial particles", () => {
   const dictionary = { "강민": "カンミン" };
-  assert.equal(convert("강민이", { dictionary }), "カンミニ");
+  assert.equal(convert("강민이", { dictionary }), "カンミンイ");
 });
 
 
-test("moves dictionary-name codas onto vowel-initial particles", () => {
+test("preserves dictionary-name readings before vowel-initial particles", () => {
   const dictionary = {
     "강민": "カンミン",
     "윤서연": "ユン・ソヨン",
     "길": "キル"
   };
-  assert.equal(convert("강민이", { dictionary }), "カンミニ");
-  assert.equal(convert("강민이가", { dictionary }), "カンミニガ");
-  assert.equal(convert("강민은", { dictionary }), "カンミヌン");
-  assert.equal(convert("강민을", { dictionary }), "カンミヌㇽ");
-  assert.equal(convert("강민에", { dictionary }), "カンミネ");
-  assert.equal(convert("강민으로", { dictionary }), "カンミヌロ");
-  assert.equal(convert("윤서연이", { dictionary }), "ユン・ソヨニ");
-  assert.equal(convert("길이", { dictionary }), "キリ");
+  assert.equal(convert("강민이", { dictionary }), "カンミンイ");
+  assert.equal(convert("강민이가", { dictionary }), "カンミンイガ");
+  assert.equal(convert("강민은", { dictionary }), "カンミンウン");
+  assert.equal(convert("강민을", { dictionary }), "カンミンウㇽ");
+  assert.equal(convert("강민에", { dictionary }), "カンミンエ");
+  assert.equal(convert("강민으로", { dictionary }), "カンミンウロ");
+  assert.equal(convert("윤서연이", { dictionary }), "ユン・ソヨンイ");
+  assert.equal(convert("길이", { dictionary }), "キルイ");
 });
 
 test("voices particles after dictionary names ending in sonorant codas", () => {
@@ -101,7 +101,7 @@ test("ordinary words voice particles after sonorant codas", () => {
 test("ruby preview applies coda liaison after dictionary names", () => {
   const html = toRubyHtml("강민이가", { dictionary: { "강민": "カンミン" } });
   const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map(match => match[1]).join("");
-  assert.equal(readings, "カンミニガ");
+  assert.equal(readings, "カンミンイガ");
 });
 
 test("ruby preview preserves sonorant-coda voicing after dictionary names", () => {

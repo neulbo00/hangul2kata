@@ -49,17 +49,8 @@ function renderToken(token, options) {
     // must remain outside the dictionary match (and outside the ruby annotation).
     if (suffix && !HANGUL_PATTERN.test(suffix)) continue;
     html += renderConvertedSegments(token.slice(cursor, keyStart), options);
-    const liaison = getDictionaryLiaison(key, String(dictionary[key]), suffix, options);
-    if (liaison) {
-      html += renderRuby(key, liaison.nameReading);
-      const particleText = suffix.match(/^[가-힣]+/u)?.[0] ?? "";
-      const trailingText = suffix.slice(particleText.length);
-      if (particleText) html += renderRuby(particleText, liaison.suffixReading);
-      if (trailingText) html += escapeHtml(trailingText);
-      cursor = token.length;
-      lastMatchedKey = null;
-      break;
-    }
+    // Preserve the dictionary reading as registered; render following particles
+    // independently so ruby preview matches the main converter.
     html += renderRuby(key, String(dictionary[key]));
     cursor = keyStart + key.length;
     lastMatchedKey = key;
