@@ -62,9 +62,25 @@ test("voices initial lax consonants in particles after vowel-final dictionary na
 
 test("does not voice particles after consonant-final dictionary names", () => {
   const dictionary = { "강민": "カンミン" };
-  assert.equal(convert("강민이", { dictionary }), "カンミンイ");
+  assert.equal(convert("강민이", { dictionary }), "カンミニ");
 });
 
+
+test("moves dictionary-name codas onto vowel-initial particles", () => {
+  const dictionary = {
+    "강민": "カンミン",
+    "윤서연": "ユン・ソヨン",
+    "길": "キル"
+  };
+  assert.equal(convert("강민이", { dictionary }), "カンミニ");
+  assert.equal(convert("강민이가", { dictionary }), "カンミニガ");
+  assert.equal(convert("강민은", { dictionary }), "カンミヌン");
+  assert.equal(convert("강민을", { dictionary }), "カンミヌル");
+  assert.equal(convert("강민에", { dictionary }), "カンミネ");
+  assert.equal(convert("강민으로", { dictionary }), "カンミヌロ");
+  assert.equal(convert("윤서연이", { dictionary }), "ユン・ソヨニ");
+  assert.equal(convert("길이", { dictionary }), "キリ");
+});
 
 test("voices particles after dictionary names ending in sonorant codas", () => {
   const dictionary = { "강민": "カンミン", "윤서연": "ユン・ソヨン" };
