@@ -33,9 +33,9 @@ function renderToken(token, options) {
   const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
   if (!keys.length) return renderConvertedSegments(token, options);
 
-  const opening = "「『([{\\\\\\\"'“‘";
-  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\\\\\"'”’";
-  const escapeRegExp = (value) => value.split("").map(char => "\\\\^$.*+?()[]{}|".includes(char) ? "\\\\" + char : char).join("");
+  const opening = "「『([{\\\"'“‘";
+  const trailing = "은는이가을를과와도만의에에서로으로께께서랑하고며요!?.,:;」』)]}\\\"'”’";
+  const escapeRegExp = (value) => value.split("").map(char => "\\^$.*+?()[]{}|".includes(char) ? "\\" + char : char).join("");
   const pattern = new RegExp("(^|[" + escapeRegExp(opening) + "])(" + keys.map(escapeRegExp).join("|") + ")(?=$|[" + escapeRegExp(trailing) + "])", "gu");
   let html = "";
   let cursor = 0;
