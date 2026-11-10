@@ -190,7 +190,8 @@ function convertWord(word, dictionary, final_style, boundary_mode, initialPrevio
 }
 
 export function convert(text, options = {}) {
-  const { final_style = "small", boundary_mode = "independent", dictionary = {}, initial_context = null } = options;
+  const { final_style = "small", boundary_mode = "independent", dictionary = {}, use_dictionary = true, initial_context = null } = options;
+  const activeDictionary = use_dictionary ? dictionary : {};
   const words = text.split(/(\s+)/u);
   let context = initial_context;
   return words.map(word => {
