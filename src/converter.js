@@ -197,7 +197,7 @@ export function convert(text, options = {}) {
     if (!word || /^\s+$/u.test(word)) return word;
     const previous = context === "vowel" ? { vowel: "ㅏ", coda: "" } : (context && typeof context === "object" ? context : null);
     context = null;
-    return convertWord(word, dictionary, final_style, boundary_mode, previous);
+    return convertWord(word, activeDictionary, final_style, boundary_mode, previous);
   }).join("");
 }
 
