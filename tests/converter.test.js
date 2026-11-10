@@ -100,3 +100,24 @@ test("applies a dictionary entry only to its exact whitespace-delimited token", 
     "アンニョン(辞書) セサン アンニョン(辞書)"
   );
 });
+
+
+test("disables user dictionary entries when use_dictionary is false", () => {
+  assert.equal(
+    convert("안녕 세상", {
+      dictionary: { "안녕": "アンニョン(辞書)" },
+      use_dictionary: false
+    }),
+    "アンニョン セサン"
+  );
+});
+
+test("keeps the default pronunciation conversion available with dictionary disabled", () => {
+  assert.equal(
+    convert("강민이", {
+      dictionary: { "강민": "カンミン(辞書)" },
+      use_dictionary: false
+    }),
+    "カンミニ"
+  );
+});
