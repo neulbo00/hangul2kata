@@ -53,19 +53,21 @@ async function loadArtistDictionaries() {
 
   const status = $("artistDictionaryStatus");
   if (successCount === Object.keys(ARTIST_DICTIONARY_FILES).length) {
-    status.textContent = `${successCount}개 그룹 사전 적용됨`;
+    status.textContent = `${successCount}개 그룹 사전 준비됨`;
     status.classList.add("is-ready");
   } else {
-    status.textContent = `${successCount}/${Object.keys(ARTIST_DICTIONARY_FILES).length}개 사전 적용`;
+    status.textContent = `${successCount}/${Object.keys(ARTIST_DICTIONARY_FILES).length}개 사전 준비`;
     status.classList.add("is-partial");
   }
   update();
 }
 
 function getOptions() {
+  const useDictionary = $("useDictionary").checked;
   return {
     final_style: $("finalStyle").value,
-    dictionary: { ...artistDictionary, ...dictionary }
+    use_dictionary: useDictionary,
+    dictionary: useDictionary ? { ...artistDictionary, ...dictionary } : {}
   };
 }
 
@@ -107,6 +109,7 @@ source.addEventListener("input", () => {
   inputTimer = setTimeout(update, 150);
 });
 $("finalStyle").addEventListener("change", update);
+$("useDictionary").addEventListener("change", update);
 const artistExamples = {
   VERIVERY: "베리베리의 강민과 동헌이 무대에 섭니다.",
   EVNNE: "이븐의 박한빈과 케이타가 무대에 섭니다.",
@@ -149,7 +152,7 @@ document.querySelectorAll("[data-artist]").forEach((button) => {
     status.textContent = "JSON 불러오는 중…";
     try {
       await loadArtistJson(group);
-      status.textContent = group === "ALL" ? "세 그룹 JSON 불러오기 완료" : group + " JSON 불러오기 완료";
+      status.textContent = group === "ALL" ? "세 그룹 JSON 준비 완료" : group + " JSON 준비 완료";
       status.classList.add("is-ready");
     } catch (error) {
       status.textContent = "JSON 불러오기 실패";
