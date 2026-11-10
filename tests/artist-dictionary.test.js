@@ -109,3 +109,17 @@ test("ruby preview preserves sonorant-coda voicing after dictionary names", () =
   const readings = [...html.matchAll(/<rt lang="ja">([^<]*)<\/rt>/gu)].map(match => match[1]).join("");
   assert.match(readings, /カンミンド/u);
 });
+
+
+test("can bypass dictionary readings while retaining ordinary conversion", () => {
+  const dictionary = { "강민": "カンミン", "베리베리": "ベリベリ" };
+  assert.equal(convert("강민은", { dictionary, use_dictionary: false }), convert("강민은"));
+  assert.notEqual(convert("강민은", { dictionary, use_dictionary: false }), convert("강민은", { dictionary }));
+});
+
+test("ruby preview bypasses dictionary readings when dictionary use is disabled", () => {
+  const dictionary = { "강민": "カンミン" };
+  const html = toRubyHtml("강민은", { dictionary, use_dictionary: false });
+  assert.doesNotMatch(html, /カンミン/u);
+  assert.match(html, /<rt lang="ja">/u);
+});
