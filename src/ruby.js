@@ -29,7 +29,7 @@ function renderConvertedSegments(value, options, initialContext = null) {
 }
 
 function renderToken(token, options) {
-  const dictionary = options.dictionary ?? {};
+  const dictionary = options.use_dictionary === false ? {} : (options.dictionary ?? {});
   const keys = Object.keys(dictionary).filter(Boolean).sort((a, b) => b.length - a.length);
   if (!keys.length) return renderConvertedSegments(token, options);
 
