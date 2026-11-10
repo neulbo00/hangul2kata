@@ -66,3 +66,5 @@ footer{text-align:center;color:#657084;font-size:10px;margin-top:24px}
 #loadedArtistCount{font-size:11px;color:var(--muted);margin:8px 0}
 #loadedArtistEntries{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:5px 16px;max-height:220px;overflow:auto;margin:0;padding:0;list-style:none}
 #loadedArtistEntries li{font-size:11px;color:var(--text);padding:4px 0;border-bottom:1px solid #252d3a}
+
+.dictionary-toggle{display:flex;align-items:center;gap:8px;color:var(--text)!important;font-size:12px!important;font-weight:650}.dictionary-toggle input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
